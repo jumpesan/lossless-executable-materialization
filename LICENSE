@@ -1,0 +1,79 @@
+# License
+
+Copyright (c) 2026 Jumpei Fujii
+
+This repository uses a split-license model so that research/documentation can be reused as published knowledge while executable materials can be reused under a software-specific open-source license.
+
+## Documentation and research materials — CC BY 4.0
+
+Unless otherwise noted, human-readable documentation and research materials in this repository are licensed under the Creative Commons Attribution 4.0 International License (CC BY 4.0).
+
+This includes, in particular:
+
+- `README.md`
+- `AI_ASSISTANCE.md`
+- `CONTRIBUTING.md`
+- `SECURITY.md`
+- `ROADMAP.md`
+- `PUBLICATION_CHECKLIST.md`
+- `reports/**/*.md`
+- `research/**/*.md`
+- `experiments/**/*.md`
+- `spec/**/*.md`
+- `fixtures/**/*.md`
+- `CITATION.cff`
+
+CC BY 4.0 permits sharing and adaptation, including commercial use, provided appropriate attribution is given and changes are indicated.
+
+License notice and canonical legal-code links:
+
+- `LICENSES/CC-BY-4.0.md`
+- https://creativecommons.org/licenses/by/4.0/
+
+## Software and machine-readable executable/materialization artifacts — Apache-2.0
+
+Unless otherwise noted, source code, scripts, automation, machine-readable protocol examples, executable fixtures, and generated materialization artifacts are licensed under the Apache License, Version 2.0 (Apache-2.0).
+
+This includes, in particular:
+
+- `**/*.py`
+- `.github/workflows/**/*.yml`
+- `.github/workflows/**/*.yaml`
+- `spec/**/*.json`
+- `fixtures/**/*.json`
+- `fixtures/**/*.b64`
+- `fixtures/canonical/**`
+- `fixtures/representation/**`
+- `.gitattributes`
+
+Full license text:
+
+- `LICENSES/Apache-2.0.txt`
+- https://www.apache.org/licenses/LICENSE-2.0
+
+## Third-party materials and quotations
+
+This repository may cite, link to, or quote third-party specifications, papers, software, or other materials. The licenses above do not override rights or license terms held by third parties.
+
+Third-party material remains subject to its original license, copyright, quotation rules, or other applicable terms.
+
+## Precedence
+
+If a file contains an explicit license or SPDX notice, that file-level notice takes precedence over the path-based defaults above.
+
+If a future directory or release introduces a different license, it must state that license explicitly.
+
+---
+
+# 日本語補足
+
+本Repositoryは、研究文書とSoftware/Executable Artifactでライセンスを分けています。
+
+- 研究レポート、仕様説明、README等の文章資料: **CC BY 4.0**
+- Python、CI、machine-readable descriptor、fixture、Base64 representation等: **Apache-2.0**
+
+研究内容は出典を明示したうえで広く共有・改変・利用でき、Software側も実装・改変・再配布・商用利用を含む幅広い利用を可能にする構成です。
+
+個別Fileに別のlicense/SPDX表記がある場合は、その個別表記を優先します。
+
+日本語部分は利用者向けの補足です。正式な条件は各ライセンスの本文に従います.
