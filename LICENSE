@@ -66,13 +66,13 @@ If a future directory or release introduces a different license, it must state t
 
 # 日本語補足
 
-本Repositoryは、研究文書とSoftware/Executable Artifactでライセンスを分けています。
+本リポジトリは、研究文書とソフトウェア/実行可能成果物でライセンスを分けています。
 
-- 研究レポート、仕様説明、README等の文章資料: **CC BY 4.0**
-- Python、CI、machine-readable descriptor、fixture、Base64 representation等: **Apache-2.0**
+- 研究レポート、仕様説明、READMEなどの文章資料: **CC BY 4.0**
+- Python、CI、機械可読な記述子、検証用フィクスチャ、Base64表現など: **Apache-2.0**
 
-研究内容は出典を明示したうえで広く共有・改変・利用でき、Software側も実装・改変・再配布・商用利用を含む幅広い利用を可能にする構成です。
+研究内容は出典を明示したうえで広く共有・改変・利用でき、ソフトウェア側も実装・改変・再配布・商用利用を含む幅広い利用を可能にする構成です。
 
-個別Fileに別のlicense/SPDX表記がある場合は、その個別表記を優先します。
+個別ファイルに別のライセンス/SPDX表記がある場合は、その個別表記を優先します。
 
-日本語部分は利用者向けの補足です。正式な条件は各ライセンスの本文に従います.
+日本語部分は利用者向けの補足です。正式な条件は各ライセンスの本文に従います。
