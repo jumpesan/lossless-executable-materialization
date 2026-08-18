@@ -16,6 +16,8 @@ This repository is intentionally being prepared while still private.
 - [x] Published fixture representation + descriptor
 - [x] Local fixture verifier
 - [x] Fixture CI workflow definition
+- [x] Explicit repository-wide AI Assistance Disclosure
+- [x] README summary of AI-assisted research/development methodology
 - [x] CONTRIBUTING.md
 - [x] SECURITY.md
 - [x] Issue / PR contribution templates
