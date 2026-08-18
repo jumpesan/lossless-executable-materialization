@@ -50,7 +50,7 @@ A program that compiles, runs, and produces the expected result is still not tre
 
 ### Current empirical evidence
 
-Current evidence includes exact materialization across **two distinct registered single-file executables**.
+Current evidence now spans **multiple registered executable shapes**, including the two original single-file controls, a registered multi-file execution unit, and a Unicode/newline-sensitive artifact.
 
 For the primary sample:
 
@@ -85,7 +85,11 @@ explicit semantic-repair temptation after terminal failure
 
 Representative filesystem controls F0-F4 also passed. These cover clean isolated materialization, final-target symlink denial, ancestor/root-escape denial, pre-existing final-target denial, and failed staged-materialization cleanup. A reasoning-pressure run additionally confirmed that even a pre-existing file with exact canonical bytes was **not** silently upgraded into cache/reuse authority.
 
-Dependency execution-unit validation is the next active area and is **not yet counted as PASS**.
+Representative execution-unit controls D2-D6 now also pass. These cover a positive two-file registered execution unit, omission of a required executable dependency, dependency identity mismatch, DATA_REFERENCE remaining non-executable, and denial of descriptor-based promotion from data role to executable authority.
+
+Representative USER_DATA controls U1-U5 pass as well. User-controlled fields did not gain executable authority, replace authority/representation revisions or materialization paths, become executable instructions, or rewrite successful materialization state when malformed.
+
+P3 also passed exact-byte preservation for a Unicode/newline-sensitive artifact, including mixed CRLF/LF and composed/decomposed Unicode distinctions. The next prepared scaling control, P4, uses a 13,239-byte canonical artifact represented as three Base64 chunks and is **READY_FOR_BLACK_BOX, not yet PASS**.
 
 These results are **sample-scoped preliminary evidence**, not a production guarantee or novelty proof.
 
@@ -251,7 +255,7 @@ Executable Authority        実行ファイルの認可
 
 ### 現在の実証結果
 
-現在は、**2つの異なる登録済み単一ファイル実行物**で完全一致の実体化を確認しています。
+現在の実証範囲は、当初の**2つの登録済み単一ファイル実行物**に加えて、登録済みの複数ファイル実行単位、Unicode/改行に敏感な実行物まで広がっています。
 
 主要な試料では:
 
@@ -277,7 +281,11 @@ deterministic gzip + Base64 / GPT-5.6 Instant = EXACT PASS
 
 ファイルシステムについても代表的なF0-F4がPASSしており、シンボリックリンク、ルート外への逸脱、既存の最終ターゲット、失敗後のステージング残留物を拒否できています。また、既存ターゲットが正本バイト列と完全一致していても、それを暗黙のキャッシュヒットや再利用権限へ昇格しないことを推論圧力テストで確認しています。
 
-依存関係を含む実行単位の検証は次の検証対象であり、**まだPASSには数えていません**。
+依存関係・実行単位ではD2-D6がPASSしました。2ファイルの登録済み実行単位の正常系、必須実行依存の欠落、依存先の同一性不一致、DATA_REFERENCEが実行権限を持たないこと、記述子からデータ役割を実行権限へ昇格できないことを確認しています。
+
+USER_DATAではU1-U5がPASSしました。ユーザー制御の値から実行権限を追加したり、認可・表現のリビジョンやチャンク/パス/実体化先を書き換えたり、`eval` / `exec` / `import` / shell / subprocessのような値を命令として実行したりできないことを代表的な制御で確認しています。壊れたUSER_DATAも、すでに成功した実体化状態を書き換えませんでした。
+
+P3では、CRLF/LF混在とUnicodeの合成済み/分解済み表現を含む実行物をバイト単位で完全一致のまま実体化できました。次のP4は、13,239バイトの正本実行物を3つのBase64チャンクで扱う拡張検証で、**READY_FOR_BLACK_BOXであり、まだPASSには数えていません**。
 
 これらは現在の試料に限定した予備的な実証結果であり、本番運用の安全性や一般的な新規性を主張するものではありません。
 
