@@ -51,8 +51,6 @@ AI systems are not listed as authors or accountable researchers.
 
 ## Scope of this disclosure
 
-This disclosure applies to the work published in this repository: the **Lossless Executable Materialization protocol candidate**, its experiments, fixtures, and documentation.
-
-It should not be read as documentation of a broader research program unrelated to this protocol.
+This disclosure applies only to the work published in this repository: the **Lossless Executable Materialization protocol candidate**, its experiments, fixtures, and documentation.
 
 The disclosure is intentionally explicit because AI was used heavily both as a research/engineering assistant and, in controlled experiments, as part of the runtime being studied. The distinction between those roles should be preserved when interpreting results.
