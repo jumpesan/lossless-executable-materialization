@@ -12,9 +12,9 @@ production_status: not established
 novelty_claim: not established
 ```
 
-**Author:** TBD  
-**Affiliation:** TBD  
-**Public release license:** TBD
+**Author:** Jumpei Fujii  
+**Public release license:** TBD  
+**AI assistance:** Extensive; see [AI_ASSISTANCE.md](../AI_ASSISTANCE.md)
 
 ---
 
