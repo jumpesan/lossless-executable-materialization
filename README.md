@@ -8,32 +8,26 @@
 
 ## English
 
-This repository studies a protocol candidate for a specific runtime problem:
+This repository focuses on one narrow problem:
 
-```text
-structured Context
-+ deterministic Scripts
-+ general-purpose LLM host
-+ user interaction
--> application-like runtime behavior
-```
+> How can an LLM-hosted runtime obtain the exact executable bytes that are authorized to run, prove that identity locally, and fail closed when exact materialization cannot be established?
 
-When deterministic behavior must be defined by an exact registered executable, semantic understanding is not enough. An LLM may understand what a program should do while the execution environment still lacks a trustworthy, byte-exact copy of the executable that is authorized to run.
+The problem appears when an LLM can identify which deterministic executable is required, while the execution environment does not automatically possess a trustworthy byte-exact copy of that executable.
 
-The research therefore separates:
+The protocol candidate separates:
 
 ```text
 Executable Authority
 -> Lossless Representation
--> Host Observation / Acquisition
+-> Representation Acquisition
 -> Deterministic Assembly
--> Mechanical Decode / Materialization
+-> Mechanical Materialization
 -> Identity Proof
 -> Execution Eligibility
 -> Deterministic Execution Evidence
 ```
 
-The key invariant is:
+Its core invariant is:
 
 ```text
 semantic or functional equivalence
@@ -41,23 +35,29 @@ semantic or functional equivalence
 canonical executable identity
 ```
 
+A program that compiles, runs, and produces the expected result is still not treated as the authoritative executable when exact identity is required but unproven.
+
+### Scope
+
+This repository is intentionally limited to the **Lossless Executable Materialization protocol candidate** and the evidence needed to evaluate it.
+
+It does not attempt to publish or document the broader application architecture, product, domain implementation, or upstream research program from which the materialization problem was first encountered.
+
 ### Public evidence boundary
 
-This public package is intentionally self-contained.
+The public reproduction package is self-contained.
 
-**All reproducible artifact identities and executable material published here are derived from the domain-neutral synthetic fixture included in this repository.** No external proprietary executable, private-project source file, private repository path, private revision, or private artifact fingerprint is required to reproduce the public materialization flow.
+All executable material and exact artifact identities intentionally published for reproduction are derived from the domain-neutral synthetic fixture included in this repository. No private source file, private repository path, private revision, or private artifact fingerprint is required for public reproduction.
 
-Public claims should be grounded only in artifacts and experiments that can be reproduced from this repository or in clearly cited public prior art.
+Earlier empirical observations are described only to the extent needed to motivate or evaluate the protocol boundary. The public fixture is the reference artifact for independent reproduction.
 
 ### Public reference fixture
-
-The repository includes a synthetic executable fixture designed only to exercise the materialization boundary:
 
 ```bash
 python fixtures/verify_reference_fixture.py
 ```
 
-The verifier performs:
+The verifier exercises:
 
 ```text
 ordered operand acquisition
@@ -70,52 +70,40 @@ ordered operand acquisition
 -> structured-result validation
 ```
 
-The fixture is generated deterministically and has fixed public identities. See [fixtures/README.md](fixtures/README.md).
+See [fixtures/README.md](fixtures/README.md).
 
-### Current research status
-
-The public repository currently establishes a **reproducible reference implementation and protocol draft**, not a universal LLM-host result.
+### Current status
 
 ```text
-public synthetic fixture / deterministic generation = available
-public local identity/materialization verifier = available
 protocol draft v0.1 = available
+public synthetic fixture = available
+public deterministic generator/verifier = available
 public prior-art scan = available
-fresh LLM-host black-box reproduction on the public fixture = open work
+independent LLM-host reproduction using the public fixture = open work
 cross-host / cross-vendor portability = open work
 production safety = not established
 novelty claim = not established
 ```
 
-Independent reproduction, failure reports, closer prior art, and protocol criticism are welcome.
+Independent reproduction, counterexamples, closer prior art, and protocol-design criticism are welcome.
 
 ### AI assistance disclosure
 
-This research and repository were developed with **extensive use of AI assistants**, primarily through general-purpose ChatGPT/LLM environments. AI assistance has been used for architecture exploration, hypothesis generation and critique, experiment planning, drafting/refactoring code and documentation, analysis support, prior-art search support, editing, translation, and repository preparation.
+This research and repository were developed with **extensive use of AI assistants**, primarily through general-purpose ChatGPT/LLM environments. AI assistance has been used for architecture and protocol exploration, hypothesis generation and critique, experiment planning, drafting/refactoring code and documentation, analysis support, prior-art search support, editing, translation, and repository preparation.
 
-AI also appears separately as part of the runtime class being studied. These two roles are kept distinct.
+AI also appears separately as part of the runtime class being studied. These roles are kept distinct.
 
-AI-generated text, code, or interpretation is **not treated as experimental evidence by itself**. Public claims are intended to remain grounded in inspectable artifacts, machine-checkable identities, reproducible execution results, negative controls, and cited public sources. Human responsibility for research direction, evidence acceptance, interpretation, and publication remains explicit.
+AI-generated text, code, or interpretation is **not treated as experimental evidence by itself**. Public claims are intended to remain grounded in inspectable artifacts, machine-checkable identities, reproducible execution results, negative controls, and cited public sources.
 
 See [AI_ASSISTANCE.md](AI_ASSISTANCE.md).
 
 ### What is not claimed as new
 
-This project does **not** claim invention of Base64, gzip, hashing, chunking, manifests, content addressing, reproducible execution, or software-supply-chain verification. Strong prior art exists in OCI, TUF, SRI, Nix, content-addressed systems, MCP resources, software-supply-chain frameworks, and related mechanisms.
+This project does **not** claim invention of Base64, gzip, hashing, chunking, manifests, content addressing, reproducible execution, or software-supply-chain verification.
 
-The research question is whether mature primitives can be composed into a useful protocol layer for environments where:
-
-```text
-host-visible representations may be transformed or normalized
-+
-execution environments may have different acquisition capabilities
-+
-exact executable identity is still required before authoritative execution
-```
+The research question is whether mature primitives can be composed into a useful protocol layer for an LLM-host boundary where exact executable identity must remain authoritative despite host/sandbox acquisition differences or representation normalization.
 
 ### Licensing
-
-This repository uses split licensing:
 
 ```text
 documentation / reports / prose specifications / research notes
@@ -126,7 +114,7 @@ executable fixtures / generated materialization artifacts
 -> Apache-2.0
 ```
 
-See [LICENSE](LICENSE) for exact scope and [LICENSES/](LICENSES/) for license text/notices.
+See [LICENSE](LICENSE) and [LICENSES/](LICENSES/).
 
 ### Repository layout
 
@@ -152,11 +140,6 @@ fixtures/
 research/
   prior-art.md
 
-.github/ISSUE_TEMPLATE/
-  reproduction.yml
-  prior-art.yml
-  protocol-feedback.yml
-
 AI_ASSISTANCE.md
 CONTRIBUTING.md
 SECURITY.md
@@ -181,28 +164,20 @@ Read more:
 
 ## 日本語
 
-このRepositoryは、汎用LLM HostをApplication-like Runtimeとして利用する際に生じる、**正確なExecutable Materialization**の問題を研究する公開Repositoryです。
+このRepositoryは、**Lossless Executable Materializationという1つのProtocol Candidate**に対象を絞った公開研究Repositoryです。
 
-想定する構造は次の通りです。
+扱う問いは次です。
 
-```text
-構造化Context
-+ deterministic Scripts
-+ 汎用LLM Host
-+ User Interaction
--> Application-like Runtime Behavior
-```
+> LLM Hostが必要なdeterministic executableを識別できても、Execution Environmentにその正確なbytesが存在するとは限らない。では、authorizedなExecutableをlosslessにmaterializeし、local identityを証明してからだけ実行資格を与えるにはどうすればよいか。
 
-LLMが「どのProgramを使うべきか」を理解していても、そのProgramの正確なbytesがExecution Environment内に存在し、かつ実行を許可されたCanonical Executableと同一であるとは限りません。
-
-そこで本研究では次の責務を分離します。
+Protocol Candidateでは次の責務を分離します。
 
 ```text
 Executable Authority
 -> Lossless Representation
--> Host Observation / Acquisition
+-> Representation Acquisition
 -> Deterministic Assembly
--> Mechanical Decode / Materialization
+-> Mechanical Materialization
 -> Identity Proof
 -> Execution Eligibility
 -> Deterministic Execution Evidence
@@ -216,13 +191,19 @@ semantic / functional equivalence
 canonical executable identity
 ```
 
+compileできる、動く、期待した結果が出る、というだけでは、Exact Identityが要求されるExecutableのauthorityを満たしたことにはしません。
+
+### 公開範囲
+
+このRepositoryでは、**Materialization Protocolそのものと、その評価に必要なEvidenceだけ**を扱います。
+
+この問題が最初に発生した上位Application Architecture、Domain Implementation、Product、上流の研究体系全体を公開・解説することは目的にしません。
+
 ### 公開Evidenceの境界
 
-この公開Packageは**単独で再現できること**を前提にしています。
+第三者向けの再現Artifactは、このRepository内の**domain-neutral synthetic fixture**だけで完結させます。
 
-公開するExecutable Material、hash、content identity、再現手順は、すべてこのRepository内で生成した**domain-neutralなsynthetic fixture**を正本とします。外部の非公開実装、非公開Repository path、private revision、private artifact fingerprintを公開再現の前提にはしません。
-
-公開上の主張は、このRepositoryだけから再現できるArtifact/Experiment、または明示的に引用した公開Prior Artへ限定します。
+公開再現のために、private source、private repository path、private revision、private artifact fingerprintは必要ありません。初期のempirical observationについては、Protocol境界を説明・評価するために必要な範囲だけを一般化して扱います。
 
 ### Public Reference Fixture
 
@@ -245,30 +226,28 @@ ordered operand acquisition
 
 詳細は [fixtures/README.md](fixtures/README.md) を参照してください。
 
-### 現在の公開研究Status
-
-現在の公開版で確立しているのは、**再現可能なSynthetic Reference Fixture、Verifier、Protocol Draft**です。
+### 現在のStatus
 
 ```text
-public synthetic fixture / deterministic generation = available
-public local identity/materialization verifier = available
 protocol draft v0.1 = available
+public synthetic fixture = available
+public deterministic generator/verifier = available
 public prior-art scan = available
-public fixtureを使ったfresh LLM-host black-box reproduction = 今後の検証
+public fixtureを使ったindependent LLM-host reproduction = 今後の検証
 cross-host / cross-vendor portability = 今後の検証
 production safety = 未確立
 novelty claim = 未確立
 ```
 
-再現結果、失敗例、より近いPrior Art、Protocol設計上の反論を歓迎します。
+再現結果、反例、より近いPrior Art、Protocol設計上の批判を歓迎します。
 
 ### AI利用の開示
 
-本研究およびRepository作成では、**AI Assistantを積極的かつ広範囲に使用しています**。Architecture検討、仮説生成と反論、実験計画、code/documentのdraft・refactor、分析支援、prior-art探索支援、編集、翻訳、Repository整備などに利用しています。
+本研究およびRepository作成では、**AI Assistantを積極的かつ広範囲に使用しています**。Protocol/Architecture検討、仮説生成と反論、実験計画、code/documentのdraft・refactor、分析支援、prior-art探索支援、編集、翻訳、Repository整備などに利用しています。
 
 一方、AI/LLMは研究支援とは別に、研究対象となるRuntime classの一部としても登場します。この2つの役割は区別します。
 
-AI生成の文章・code・解釈そのものは、単独ではExperimental Evidenceとして扱いません。公開上の主張は、inspect可能なArtifact、machine-checkable identity、reproducible execution result、negative control、公開Sourceへ結び付けます。研究方向、Evidence採否、解釈、公開内容の責任はHuman Researcherが持ちます。
+AI生成の文章・code・解釈そのものは、単独ではExperimental Evidenceとして扱いません。公開上の主張は、inspect可能なArtifact、machine-checkable identity、reproducible execution result、negative control、公開Sourceへ結び付けます。
 
 詳細は [AI_ASSISTANCE.md](AI_ASSISTANCE.md) を参照してください。
 
