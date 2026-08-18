@@ -73,6 +73,8 @@ reports/
 
 spec/
   protocol-draft-v0.1.md
+  descriptor-example.json
+  failure-codes.md
 
 experiments/
   README.md
@@ -87,7 +89,9 @@ research/
 
 CONTRIBUTING.md
 SECURITY.md
+ROADMAP.md
 PUBLICATION_CHECKLIST.md
+CITATION.cff.template
 ```
 
 ### Status
@@ -105,9 +109,14 @@ Read the full report:
 - [Preliminary Technical Report — English](reports/preliminary-report.en.md)
 - [予備技術レポート — 日本語](reports/preliminary-report.ja.md)
 
-Read the protocol candidate:
+Protocol and research artifacts:
 
 - [Protocol Draft v0.1](spec/protocol-draft-v0.1.md)
+- [Illustrative Descriptor](spec/descriptor-example.json)
+- [Draft Failure Codes](spec/failure-codes.md)
+- [Experiment Matrix](experiments/README.md)
+- [Prior-Art Scan](research/prior-art.md)
+- [Research Roadmap](ROADMAP.md)
 
 We welcome reproduction results, counterexamples, prior art, cross-model/host tests, and protocol-design criticism. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
@@ -146,5 +155,8 @@ We welcome reproduction results, counterexamples, prior art, cross-model/host te
 - [日本語 予備技術レポート](reports/preliminary-report.ja.md)
 - [English Preliminary Technical Report](reports/preliminary-report.en.md)
 - [Protocol Draft v0.1](spec/protocol-draft-v0.1.md)
+- [Experiment Matrix](experiments/README.md)
+- [Prior-Art Scan](research/prior-art.md)
+- [Research Roadmap](ROADMAP.md)
 
 再現結果、失敗例、類似技術、別Model / 別Hostでの結果、設計上の反論も歓迎します。
