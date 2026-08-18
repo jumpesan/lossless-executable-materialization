@@ -210,48 +210,50 @@ Independent reproduction, counterexamples, closer prior art, cross-model/host te
 
 ## 日本語
 
-このRepositoryは、実際のLLM-hosted Application開発中に発生した **Lossless Executable Materialization** という1つのProtocol Candidateを扱う公開研究Repositoryです。
+このリポジトリは、実際のLLMホスト型アプリケーション開発中に発生した **Lossless Executable Materialization**（損失のない実行ファイル実体化）という1つの**プロトコル候補**を扱う公開研究リポジトリです。
 
 扱う問いは次です。
 
-> LLMが「どのdeterministic executableを実行すべきか」を判断できても、Execution Environmentにその登録済みExecutableの正確なbytesが存在するとは限らない。では、そのExecutableをlosslessにmaterializeし、local identityを証明してからだけ実行資格を与えるにはどうすればよいか。
+> LLMが「どの決定論的な実行ファイルを実行すべきか」を判断できても、実行環境にその登録済み実行ファイルの正確なバイト列が存在するとは限らない。では、その実行ファイルを損失なく実体化し、ローカルで正本との同一性を証明してからだけ実行資格を与えるにはどうすればよいか。
 
-初期のblack-box testでは、人間可読なPython Sourceを再構成した際、非空行はすべて一致し、compile / execution / structured resultもPASSした一方で、33行の空行が失われ、SHA-256 / Git blob identityが一致しない反例が得られました。
+初期のブラックボックス試験では、人間可読なPythonソースを再構成した際、非空行はすべて一致し、コンパイル・実行・構造化結果もPASSした一方で、33行の空行が失われ、SHA-256 / Git blobによる同一性検証がFAILする反例が得られました。
 
 ```text
 意味・機能が同じ
 !=
-正本Executableと同一
+正本の実行ファイルと同一
 ```
 
-この結果から、Source Reconstructionではなく **Lossless Executable Materialization** をProtocolとして扱う方向へ進みました。
+この結果から、ソース再構成ではなく **Lossless Executable Materialization** をプロトコルとして扱う方向へ進みました。
 
-### Protocol Candidate
+### プロトコル候補
+
+仕様上の概念名は英語表記を維持しますが、日本語ではおおむね次の意味です。
 
 ```text
-Executable Authority
--> Lossless Representation
--> Representation Acquisition
--> Deterministic Assembly
--> Mechanical Decode / Materialization
--> Identity Proof
--> Execution Eligibility
--> Deterministic Execution Evidence
+Executable Authority        実行ファイルの認可
+-> Lossless Representation  損失のない表現
+-> Representation Acquisition 表現の取得
+-> Deterministic Assembly    決定論的な組み立て
+-> Mechanical Decode / Materialization 機械的な復号・実体化
+-> Identity Proof            同一性の証明
+-> Execution Eligibility     実行資格
+-> Deterministic Execution Evidence 決定論的実行の証拠
 ```
 
-中心Invariantは次です。
+中心となる不変条件は次です。
 
 ```text
-semantic / functional equivalence
+意味的・機能的な同等性
 !=
-canonical executable identity
+正本実行ファイルとの同一性
 ```
 
-### 現在の実証Evidence
+### 現在の実証結果
 
-現在は、**2つの異なるregistered single-file executable**でexact materializationを確認しています。
+現在は、**2つの異なる登録済み単一ファイル実行物**で完全一致の実体化を確認しています。
 
-Primary sampleでは:
+主要な試料では:
 
 ```text
 plain chunked Base64 / GPT-5.6 Instant = EXACT PASS
@@ -259,83 +261,83 @@ plain chunked Base64 / GPT-5.6 High    = EXACT PASS
 deterministic gzip + Base64 / GPT-5.6 Instant = EXACT PASS
 ```
 
-deterministic gzip + Base64 profileでは、同一sampleのtransport representationを
+決定論的gzip + Base64方式では、同一試料の転送表現を
 
 ```text
-26076文字 / 7 chunk
+26076文字 / 7チャンク
 ->
-5480文字 / 2 chunk
+5480文字 / 2チャンク
 ```
 
-へ削減し、約79%のtransport文字削減を確認しました。
+へ削減し、約79%の転送文字数削減を確認しました。
 
-さらにsecond registered executableでもGPT-5.6 Instantのblack-box exact materializationがPASSしています。
+さらに2つ目の登録済み実行ファイルでも、GPT-5.6 Instantによるブラックボックスでの完全一致実体化がPASSしています。
 
-Fail-closed controlでは、missing operand、宣言順序の逆転、1文字corruption、final identity mismatch、未登録の近似Executable、terminal failure後のsemantic-repair temptationを検証しています。
+フェイルクローズ（失敗時は安全側に拒否する）制御では、宣言済みオペランドの欠落、直感に反するチャンク順序、1文字のペイロード破損、最終的な正本同一性の不一致、未登録の近似実行ファイル、終端失敗後の意味的修復への明示的な誘惑を検証しています。
 
-Filesystemについても代表的なF0-F4がPASSしており、symlink/root escape、pre-existing final target、失敗後のstaging residueをdenyできています。また、既存targetがcanonical bytesと完全一致していても、それを勝手にcache/reuse authorityへ昇格しないことをreasoning-pressure testで確認しています。
+ファイルシステムについても代表的なF0-F4がPASSしており、シンボリックリンク、ルート外への逸脱、既存の最終ターゲット、失敗後のステージング残留物を拒否できています。また、既存ターゲットが正本バイト列と完全一致していても、それを暗黙のキャッシュヒットや再利用権限へ昇格しないことを推論圧力テストで確認しています。
 
-Dependency execution-unit validationは次の検証対象であり、**まだPASSには数えていません**。
+依存関係を含む実行単位の検証は次の検証対象であり、**まだPASSには数えていません**。
 
-これらはsample-scopedなpreliminary evidenceであり、Production Safetyや一般的新規性を主張するものではありません。
+これらは現在の試料に限定した予備的な実証結果であり、本番運用の安全性や一般的な新規性を主張するものではありません。
 
-### Public Reference Fixture
+### 公開用参照フィクスチャ
 
-Application Domainに依存せず第三者がMaterialization Flowを確認できるように、domain-neutralなsynthetic executable fixtureも同梱しています。
+アプリケーションの分野に依存せず第三者が実体化手順を確認できるように、分野非依存の合成実行フィクスチャも同梱しています。
 
 ```bash
 python fixtures/verify_reference_fixture.py
 ```
 
-Verifierは次をmechanicalに確認します。
+検証器は次を機械的に確認します。
 
 ```text
-ordered operand acquisition
--> strict Base64 decode
--> compressed identity verification
--> deterministic gzip decompression
--> canonical identity verification
--> compile
--> deterministic execution
--> structured-result validation
+宣言順にオペランドを取得
+-> 厳密なBase64復号
+-> 圧縮データの同一性検証
+-> 決定論的なgzip展開
+-> 正本との同一性検証
+-> コンパイル
+-> 決定論的な実行
+-> 構造化結果の検証
 ```
 
 詳細は [fixtures/README.md](fixtures/README.md) を参照してください。
 
 ### 公開範囲
 
-このRepositoryでは、**Lossless Executable Materialization Protocolそのものと、その評価に必要なEvidence**に対象を絞ります。
+このリポジトリでは、**Lossless Executable Materializationプロトコルそのものと、その評価に必要な実証結果**に対象を絞ります。
 
-問題が最初に発生したApplication全体のArchitectureやDomain実装を公開・解説することは目的にしません。Application Domainを知らなくても、このProtocolは理解・再現できる構成にします。
+問題が最初に発生したアプリケーション全体のアーキテクチャや分野固有の実装を公開・解説することは目的にしません。元のアプリケーション分野を知らなくても、このプロトコルは理解・再現できる構成にします。
 
 ### AI利用の開示
 
-本研究およびRepository作成では、**AI Assistantを積極的かつ広範囲に使用しています**。Protocol/Architecture検討、仮説生成と反論、実験計画、code/documentのdraft・refactor、分析支援、prior-art探索支援、編集、翻訳、Repository整備などに利用しています。
+本研究およびリポジトリ作成では、**AIアシスタントを積極的かつ広範囲に使用しています**。プロトコル/アーキテクチャ検討、仮説生成と反論、実験計画、コード・文書の下書きやリファクタリング、分析支援、先行技術調査支援、編集、翻訳、リポジトリ整備などに利用しています。
 
-またAI/LLMは、研究支援とは別に、実験対象となるRuntime/Hostの一部としても登場します。この2つの役割は区別します。
+またAI/LLMは、研究支援とは別に、実験対象となる実行環境/ホストの一部としても登場します。この2つの役割は区別します。
 
-AI生成の文章・code・解釈そのものは、単独ではExperimental Evidenceとして扱いません。主張は、Artifact、cryptographic identity、machine execution result、structured output、negative control、black-box observationなど検証可能なEvidenceへ結び付けます。研究方向、Evidenceの採否、解釈、公開内容についてはHuman Researcherが責任を持ちます。
+AI生成の文章・コード・解釈そのものは、単独では実験的証拠として扱いません。主張は、検査可能な成果物、暗号学的な同一性情報、機械実行結果、構造化出力、否定系制御、ブラックボックス観測などの検証可能な証拠へ結び付けます。研究方向、証拠の採否、解釈、公開内容については人間の研究者が責任を持ちます。
 
 詳細は [AI_ASSISTANCE.md](AI_ASSISTANCE.md) を参照してください。
 
 ### ライセンス
 
 ```text
-研究文書 / Technical Report / 文章によるSpecification / Research Note
+研究文書 / 技術レポート / 文章による仕様 / 研究ノート
 -> CC BY 4.0
 
-Source Code / Script / CI / Machine-readable Example /
-Executable Fixture / Generated Materialization Artifact
+ソースコード / スクリプト / CI / 機械可読な例 /
+実行フィクスチャ / 生成された実体化成果物
 -> Apache-2.0
 ```
 
-適用範囲は [LICENSE](LICENSE)、正式なLicense本文は [LICENSES/](LICENSES/) を参照してください。
+適用範囲は [LICENSE](LICENSE)、正式なライセンス本文は [LICENSES/](LICENSES/) を参照してください。
 
 - [日本語 予備技術レポート](reports/preliminary-report.ja.md)
-- [English Preliminary Technical Report](reports/preliminary-report.en.md)
-- [Protocol Draft v0.1](spec/protocol-draft-v0.1.md)
-- [Experiment Matrix](experiments/README.md)
-- [Public Reference Fixture](fixtures/README.md)
-- [Prior-Art Scan](research/prior-art.md)
-- [Research Roadmap](ROADMAP.md)
-- [v0.1-preliminary Release Notes](RELEASE_NOTES.md)
+- [英語 予備技術レポート](reports/preliminary-report.en.md)
+- [プロトコル草案 v0.1](spec/protocol-draft-v0.1.md)
+- [実験一覧](experiments/README.md)
+- [公開用参照フィクスチャ](fixtures/README.md)
+- [先行技術調査](research/prior-art.md)
+- [研究ロードマップ](ROADMAP.md)
+- [v0.1-preliminary リリースノート](RELEASE_NOTES.md)
