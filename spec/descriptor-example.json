@@ -39,16 +39,43 @@
     "sha256": "9edabcca4016dda30e0d79a522d994f2f5c26375915f1a9814b52263f2ab99c4",
     "git_blob_sha1": "7aa3327f9351156fa617a613554819c2a6879d08"
   },
+  "materialization": {
+    "root_policy": "contained-root-v0.1",
+    "final_target": "materialized/example-validator.py",
+    "final_target_must_not_exist": true,
+    "deny_final_target_symlink": true,
+    "deny_ancestor_root_escape": true,
+    "staging_required": true,
+    "failed_attempt_residue_allowed": false,
+    "implicit_cache_reuse_allowed": false
+  },
+  "execution_unit": {
+    "entrypoint_executable_id": "example-validator",
+    "members": [
+      {
+        "executable_id": "example-validator",
+        "role": "entrypoint",
+        "authority_required": true,
+        "identity_required": true
+      }
+    ],
+    "all_executable_members_must_pass": true
+  },
   "execution": {
     "interface": "python-script",
     "requires_identity_pass": true,
+    "requires_materialization_preconditions_pass": true,
+    "requires_execution_unit_pass": true,
     "structured_result_required": true
   },
   "failure": {
     "terminal_on_missing_operand": true,
     "terminal_on_representation_identity_mismatch": true,
     "terminal_on_canonical_identity_mismatch": true,
+    "terminal_on_materialization_precondition_failure": true,
+    "terminal_on_execution_unit_failure": true,
     "semantic_repair_allowed": false,
+    "implicit_cache_reuse_allowed": false,
     "alternate_representation_after_terminal_failure_allowed": false
   }
 }
