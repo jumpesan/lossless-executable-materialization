@@ -8,32 +8,19 @@
 
 ## English
 
-This repository is the public research workspace for a protocol candidate that emerged while exploring a broader architecture idea:
+This repository studies a protocol candidate for a specific runtime problem:
 
 ```text
 structured Context
 + deterministic Scripts
-+ general-purpose ChatGPT / LLM host
++ general-purpose LLM host
 + user interaction
 -> application-like runtime behavior
 ```
 
-The original goal was not to invent a transport protocol. The problem appeared after the LLM could determine **which deterministic executable should run**, while the host-provided sandbox could not reliably obtain the exact registered executable bytes from a fresh public resource.
+When deterministic behavior must be defined by an exact registered executable, semantic understanding is not enough. An LLM may understand what a program should do while the execution environment still lacks a trustworthy, byte-exact copy of the executable that is authorized to run.
 
-A critical black-box counterexample then showed that human-readable source can be semantically preserved while byte identity is lost:
-
-```text
-functional behavior = PASS
-all nonblank lines preserved = PASS
-33 blank lines removed
-SHA-256 / Git blob identity = FAIL
-```
-
-This led to a different question:
-
-> Can an LLM host transport a lossless representation, mechanically materialize the exact canonical bytes in a sandbox, prove content identity, and only then make the artifact eligible for authoritative deterministic execution?
-
-### Current candidate flow
+The research therefore separates:
 
 ```text
 Executable Authority
@@ -46,51 +33,89 @@ Executable Authority
 -> Deterministic Execution Evidence
 ```
 
-Current evidence includes exact materialization across **two distinct registered single-file executables**. The primary sample passed plain chunked Base64 in fresh GPT-5.6 Instant and High Temporary Chats, and deterministic gzip + Base64 in a fresh GPT-5.6 Instant Temporary Chat. The gzip profile reduced the tested representation from 26,076 characters / 7 chunks to 5,480 characters / 2 chunks (~79% fewer transport characters). A second registered executable also passed exact black-box materialization with GPT-5.6 Instant.
+The key invariant is:
 
-Fail-closed evidence for the current samples includes missing operands, counterintuitive declared chunk order, one-character payload corruption, final identity mismatch, unregistered near-identical executable identity, and explicit semantic-repair temptation after terminal failure. Representative filesystem controls F0-F4 also pass, including denial of symlink/root-escape paths, pre-existing final targets, and failed staged materialization residue. A reasoning-pressure run confirmed that even a pre-existing target with exact canonical bytes was **not** silently upgraded into a cache hit or execution authority.
+```text
+semantic or functional equivalence
+!=
+canonical executable identity
+```
 
-Dependency execution-unit validation is the next active control and is **not yet counted as PASS**.
+### Public evidence boundary
 
-These results are **sample-scoped preliminary evidence**, not a production guarantee or novelty proof.
+This public package is intentionally self-contained.
+
+**All reproducible artifact identities and executable material published here are derived from the domain-neutral synthetic fixture included in this repository.** No external proprietary executable, private-project source file, private repository path, private revision, or private artifact fingerprint is required to reproduce the public materialization flow.
+
+Public claims should be grounded only in artifacts and experiments that can be reproduced from this repository or in clearly cited public prior art.
 
 ### Public reference fixture
 
-To make the repository reproducible without access to the private implementation project that originally exposed the problem, this repository includes a **domain-neutral synthetic executable fixture** with a deterministic gzip + Base64 representation, descriptor, generator, and verifier.
+The repository includes a synthetic executable fixture designed only to exercise the materialization boundary:
 
 ```bash
 python fixtures/verify_reference_fixture.py
 ```
 
-The published fixture independently exercises ordered chunk acquisition, strict decode, compressed identity, decompression, final canonical identity, compile, deterministic execution, and structured output. Its artifact identities are fixed and self-checked by the generator. See [fixtures/README.md](fixtures/README.md).
+The verifier performs:
+
+```text
+ordered operand acquisition
+-> strict Base64 decode
+-> compressed identity verification
+-> deterministic gzip decompression
+-> canonical identity verification
+-> compile
+-> deterministic execution
+-> structured-result validation
+```
+
+The fixture is generated deterministically and has fixed public identities. See [fixtures/README.md](fixtures/README.md).
+
+### Current research status
+
+The public repository currently establishes a **reproducible reference implementation and protocol draft**, not a universal LLM-host result.
+
+```text
+public synthetic fixture / deterministic generation = available
+public local identity/materialization verifier = available
+protocol draft v0.1 = available
+public prior-art scan = available
+fresh LLM-host black-box reproduction on the public fixture = open work
+cross-host / cross-vendor portability = open work
+production safety = not established
+novelty claim = not established
+```
+
+Independent reproduction, failure reports, closer prior art, and protocol criticism are welcome.
 
 ### AI assistance disclosure
 
 This research and repository were developed with **extensive use of AI assistants**, primarily through general-purpose ChatGPT/LLM environments. AI assistance has been used for architecture exploration, hypothesis generation and critique, experiment planning, drafting/refactoring code and documentation, analysis support, prior-art search support, editing, translation, and repository preparation.
 
-AI also appears separately as part of the experimental runtime/host being studied. These two roles should not be conflated.
+AI also appears separately as part of the runtime class being studied. These two roles are kept distinct.
 
-AI-generated text, code, or interpretation is **not treated as experimental evidence by itself**. Claims are intended to remain grounded in inspectable artifacts, cryptographic identities, machine execution results, structured outputs, negative controls, and black-box observations. Human responsibility for research direction, evidence acceptance, interpretation, and publication remains explicit.
+AI-generated text, code, or interpretation is **not treated as experimental evidence by itself**. Public claims are intended to remain grounded in inspectable artifacts, machine-checkable identities, reproducible execution results, negative controls, and cited public sources. Human responsibility for research direction, evidence acceptance, interpretation, and publication remains explicit.
 
-See [AI_ASSISTANCE.md](AI_ASSISTANCE.md) for the full disclosure.
+See [AI_ASSISTANCE.md](AI_ASSISTANCE.md).
 
 ### What is not claimed as new
 
-This project does **not** claim invention of Base64, gzip, hashing, chunking, manifests, content addressing, reproducible execution, or software-supply-chain verification. Strong prior art exists in OCI, TUF, SRI, Nix, BitTorrent/IPFS/IPLD, MCP resources, Agent Skills, in-toto/SLSA/Sigstore, and adjacent execution-integrity work.
+This project does **not** claim invention of Base64, gzip, hashing, chunking, manifests, content addressing, reproducible execution, or software-supply-chain verification. Strong prior art exists in OCI, TUF, SRI, Nix, content-addressed systems, MCP resources, software-supply-chain frameworks, and related mechanisms.
 
-The research question is whether those mature primitives form a useful protocol layer for a specific LLM-host boundary:
+The research question is whether mature primitives can be composed into a useful protocol layer for environments where:
 
 ```text
-semantic / human-readable observation may normalize representation
+host-visible representations may be transformed or normalized
 +
-execution sandbox may not share host retrieval capability
+execution environments may have different acquisition capabilities
 +
-exact registered executable identity is still required
+exact executable identity is still required before authoritative execution
 ```
 
 ### Licensing
 
-This repository uses split licensing so research knowledge and executable material can both be reused under licenses suited to their role:
+This repository uses split licensing:
 
 ```text
 documentation / reports / prose specifications / research notes
@@ -101,7 +126,7 @@ executable fixtures / generated materialization artifacts
 -> Apache-2.0
 ```
 
-See [LICENSE](LICENSE) for the exact scope and [LICENSES/](LICENSES/) for the license notices/text.
+See [LICENSE](LICENSE) for exact scope and [LICENSES/](LICENSES/) for license text/notices.
 
 ### Repository layout
 
@@ -136,98 +161,118 @@ AI_ASSISTANCE.md
 CONTRIBUTING.md
 SECURITY.md
 ROADMAP.md
-PUBLICATION_CHECKLIST.md
 CITATION.cff
 LICENSE
 LICENSES/
 NOTICE
 ```
 
-### Status
-
-```text
-research_stage = preliminary / active
-protocol_status = candidate / not standardized
-production_status = not established
-novelty_claim = not established
-repository_visibility = private during preparation
-```
-
-Read the full report:
+Read more:
 
 - [Preliminary Technical Report — English](reports/preliminary-report.en.md)
 - [予備技術レポート — 日本語](reports/preliminary-report.ja.md)
-
-Protocol and research artifacts:
-
 - [Protocol Draft v0.1](spec/protocol-draft-v0.1.md)
-- [Illustrative Descriptor](spec/descriptor-example.json)
-- [Draft Failure Codes](spec/failure-codes.md)
-- [Experiment Matrix](experiments/README.md)
+- [Experiment / Reproduction Guide](experiments/README.md)
 - [Public Reference Fixture](fixtures/README.md)
-- [AI Assistance Disclosure](AI_ASSISTANCE.md)
 - [Prior-Art Scan](research/prior-art.md)
 - [Research Roadmap](ROADMAP.md)
-
-We welcome reproduction results, counterexamples, prior art, cross-model/host tests, and protocol-design criticism. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ---
 
 ## 日本語
 
-このRepositoryは、次のArchitectureを検証する過程で生じた研究を外部共有するための公開準備用Repositoryです。
+このRepositoryは、汎用LLM HostをApplication-like Runtimeとして利用する際に生じる、**正確なExecutable Materialization**の問題を研究する公開Repositoryです。
+
+想定する構造は次の通りです。
 
 ```text
 構造化Context
 + deterministic Scripts
-+ 汎用ChatGPT / LLM Host
++ 汎用LLM Host
 + User Interaction
 -> Application-like Runtime Behavior
 ```
 
-元々の目的はTransport Protocolを作ることではありませんでした。LLMが「どのdeterministic executableを使うべきか」を判断できるようになった一方で、Hostが提供するSandboxへ、その**登録済みExecutableの正確なbytes**を安定して持ち込めない問題が発生しました。
+LLMが「どのProgramを使うべきか」を理解していても、そのProgramの正確なbytesがExecution Environment内に存在し、かつ実行を許可されたCanonical Executableと同一であるとは限りません。
 
-さらにblack-box testでは、人間向けに読めるPython Sourceを再構成した際、機能的には完全に動作する一方で33行の空行だけが失われ、SHA-256 / Git blob identityが一致しない反例が得られました。
+そこで本研究では次の責務を分離します。
 
 ```text
-意味が同じ
-!=
-正本Executableと同一
+Executable Authority
+-> Lossless Representation
+-> Host Observation / Acquisition
+-> Deterministic Assembly
+-> Mechanical Decode / Materialization
+-> Identity Proof
+-> Execution Eligibility
+-> Deterministic Execution Evidence
 ```
 
-そこで、SourceをLLMに再生成させるのではなく、losslessなRepresentationをHost越しに取得し、Sandbox内でmechanicalにdecode/materializeし、Canonical Identityを証明してから実行資格を与える方式へ研究対象を変更しました。
+中心Invariantは次です。
 
-現在は、**2つの異なるregistered single-file executable**でexact materializationを確認しています。Primary sampleではplain chunked Base64がGPT-5.6 Instant / Highのfresh Temporary Chatでexact PASS、deterministic gzip + Base64がGPT-5.6 Instantでexact PASSしています。gzip profileでは26,076文字 / 7 chunkから5,480文字 / 2 chunkへ約79%のtransport文字削減を確認しました。さらにsecond registered executableでもGPT-5.6 Instantのblack-box exact materializationがPASSしています。
+```text
+semantic / functional equivalence
+!=
+canonical executable identity
+```
 
-Fail-closed controlでは、missing operand、宣言順序の逆転、1文字corruption、final identity mismatch、未登録の近似Executable、terminal failure後のsemantic-repair temptationがPASSしています。Filesystemについても代表的なF0-F4がPASSし、symlink/root escape、pre-existing final target、失敗後のstaging residueをdenyできています。さらに、既存targetがcanonical bytesと完全一致していても、それを勝手にcache hitやexecution authorityへ昇格しないことをreasoning-pressure testで確認しています。
+### 公開Evidenceの境界
 
-Dependency execution-unit validationは現在の次の検証対象であり、**まだPASSには数えていません**。
+この公開Packageは**単独で再現できること**を前提にしています。
 
-これらはまだsample-scopedなpreliminary evidenceであり、Production Safetyや一般的新規性を主張するものではありません。
+公開するExecutable Material、hash、content identity、再現手順は、すべてこのRepository内で生成した**domain-neutralなsynthetic fixture**を正本とします。外部の非公開実装、非公開Repository path、private revision、private artifact fingerprintを公開再現の前提にはしません。
 
-### 公開用Reference Fixture
+公開上の主張は、このRepositoryだけから再現できるArtifact/Experiment、または明示的に引用した公開Prior Artへ限定します。
 
-元の非公開実装Projectを知らなくても第三者がMaterialization手順を確認できるように、domain-neutralなsynthetic executable fixtureを同梱しています。
+### Public Reference Fixture
 
 ```bash
 python fixtures/verify_reference_fixture.py
 ```
 
-このFixtureは、ordered chunk acquisition、strict decode、compressed identity、decompression、final canonical identity、compile、deterministic execution、structured outputまでRepository単体で検証できます。詳細は [fixtures/README.md](fixtures/README.md) を参照してください。
+Verifierは次をmechanicalに確認します。
+
+```text
+ordered operand acquisition
+-> strict Base64 decode
+-> compressed identity verification
+-> deterministic gzip decompression
+-> canonical identity verification
+-> compile
+-> deterministic execution
+-> structured-result validation
+```
+
+詳細は [fixtures/README.md](fixtures/README.md) を参照してください。
+
+### 現在の公開研究Status
+
+現在の公開版で確立しているのは、**再現可能なSynthetic Reference Fixture、Verifier、Protocol Draft**です。
+
+```text
+public synthetic fixture / deterministic generation = available
+public local identity/materialization verifier = available
+protocol draft v0.1 = available
+public prior-art scan = available
+public fixtureを使ったfresh LLM-host black-box reproduction = 今後の検証
+cross-host / cross-vendor portability = 今後の検証
+production safety = 未確立
+novelty claim = 未確立
+```
+
+再現結果、失敗例、より近いPrior Art、Protocol設計上の反論を歓迎します。
 
 ### AI利用の開示
 
-この研究およびRepositoryの作成では、**AI Assistantを積極的かつ広範囲に使用しています**。主に汎用ChatGPT/LLM環境を用い、Architecture検討、仮説生成と反論、実験計画、code/documentのdraft・refactor、実験結果の分析支援、prior-art探索支援、編集、翻訳、公開Repository整備などに利用しています。
+本研究およびRepository作成では、**AI Assistantを積極的かつ広範囲に使用しています**。Architecture検討、仮説生成と反論、実験計画、code/documentのdraft・refactor、分析支援、prior-art探索支援、編集、翻訳、Repository整備などに利用しています。
 
-またAI/LLMは、研究支援とは別に、実験対象となるRuntime/Hostの一部としても登場します。この2つの役割は区別して扱います。
+一方、AI/LLMは研究支援とは別に、研究対象となるRuntime classの一部としても登場します。この2つの役割は区別します。
 
-AIが生成した文章・code・解釈そのものは、**単独ではExperimental Evidenceとして扱いません**。主張は、Artifact、cryptographic identity、machine execution result、structured output、negative control、black-box observationなど検証可能なEvidenceへ結び付けます。研究方向、Evidenceの採否、解釈、公開内容についてはHuman Researcherが責任を持ちます。
+AI生成の文章・code・解釈そのものは、単独ではExperimental Evidenceとして扱いません。公開上の主張は、inspect可能なArtifact、machine-checkable identity、reproducible execution result、negative control、公開Sourceへ結び付けます。研究方向、Evidence採否、解釈、公開内容の責任はHuman Researcherが持ちます。
 
-詳細は [AI_ASSISTANCE.md](AI_ASSISTANCE.md) に明記しています。
+詳細は [AI_ASSISTANCE.md](AI_ASSISTANCE.md) を参照してください。
 
 ### ライセンス
-
-本Repositoryは用途に合わせたsplit licensingを採用しています。
 
 ```text
 研究文書 / Technical Report / 文章によるSpecification / Research Note
@@ -238,17 +283,12 @@ Executable Fixture / Generated Materialization Artifact
 -> Apache-2.0
 ```
 
-適用範囲の詳細は [LICENSE](LICENSE)、各Licenseの表記・本文は [LICENSES/](LICENSES/) を参照してください。
-
-ただし、これはまだ**Protocol Candidate**です。Production Safetyや一般的新規性を主張する段階ではありません。
+適用範囲は [LICENSE](LICENSE)、正式なLicense本文は [LICENSES/](LICENSES/) を参照してください。
 
 - [日本語 予備技術レポート](reports/preliminary-report.ja.md)
 - [English Preliminary Technical Report](reports/preliminary-report.en.md)
 - [Protocol Draft v0.1](spec/protocol-draft-v0.1.md)
-- [Experiment Matrix](experiments/README.md)
+- [Experiment / Reproduction Guide](experiments/README.md)
 - [Public Reference Fixture](fixtures/README.md)
-- [AI利用の開示](AI_ASSISTANCE.md)
 - [Prior-Art Scan](research/prior-art.md)
 - [Research Roadmap](ROADMAP.md)
-
-再現結果、失敗例、類似技術、別Model / 別Hostでの結果、設計上の反論も歓迎します。
