@@ -15,7 +15,6 @@ This includes, in particular:
 - `CONTRIBUTING.md`
 - `SECURITY.md`
 - `ROADMAP.md`
-- `PUBLICATION_CHECKLIST.md`
 - `reports/**/*.md`
 - `research/**/*.md`
 - `experiments/**/*.md`
