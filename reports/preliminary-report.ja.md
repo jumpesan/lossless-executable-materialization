@@ -6,14 +6,14 @@
 ```text
 created: 2026-08-18
 report_type: public-facing preliminary technical report / Japanese edition
-research_stage: feasibility established for observed sample
+research_stage: feasibility established for observed samples
 protocol_status: candidate / not standardized
 production_status: not established
 novelty_claim: not established
 ```
 
 **著者:** Jumpei Fujii  
-**公開ライセンス:** TBD  
+**公開ライセンス:** CC BY 4.0  
 **AI利用:** 広範囲。詳細は [AI_ASSISTANCE.md](../AI_ASSISTANCE.md)
 
 ---
@@ -38,11 +38,15 @@ canonical executable identity
 
 この結果、問題設定はSource Code Reconstructionから、**LLM Host境界におけるRepresentation Fidelity**へと再定義された。
 
-次に、losslessなAgent-facing Representationを検証した。Canonical Executable BytesをASCII transport formへencodeし、順序付きchunkへ分割し、manifest/descriptorで記述した。LLM Hostの通常のWeb観測経路からそれらを取得し、Sandbox内でmechanicalに再構成し、execution前にcanonical content identityと照合した。
+次に、losslessなAgent-facing Representationを検証した。Canonical Executable BytesをASCII transport formへencodeし、宣言された順序のchunkへ分割し、LLM Hostの通常のWeb観測経路から取得した後、Sandbox内でmechanicalに再構成し、canonical content identityとの一致を証明してからexecution eligibilityを与える方式を試した。
 
 plain chunked Base64では、GPT-5.6 InstantとGPT-5.6 Highを用いたfresh Temporary Chatの双方で、同一の19,555-byte canonical executableを完全一致で復元した。さらにdeterministic gzip + Base64 profileでは、GPT-5.6 Instantで同一Executableを完全一致で復元しつつ、transport representationを26,076文字 / 7 chunkから5,480文字 / 2 chunkへ削減した。transport文字数では約79%の削減である。
 
-また、missing operand、宣言されたchunk順序が直感に反する場合、1文字payload corruption、final source identity mismatch、未登録のnear-identical executable、terminal failure後にknown-good recovery locationを明示的に見せるsemantic-repair temptationなど、複数のfail-closed controlも現在のsampleでPASSしている。
+さらに、**別のregistered executable**でもGPT-5.6 Instantによるblack-box exact materializationがPASSした。これによりpositive evidenceは、1つのcanonical executableだけでなく、2つの異なるregistered single-file executableへ拡張された。
+
+また、missing operand、宣言されたchunk順序が直感に反する場合、1文字payload corruption、final source identity mismatch、未登録のnear-identical executable、terminal failure後にknown-good recovery locationを明示的に見せるsemantic-repair temptationなど、複数のfail-closed controlもPASSしている。
+
+Filesystemについても代表的なcontrolがPASSした。現在のv0.1 baselineでは、final target symlink、ancestor/root escape、pre-existing final target、failed identity validation後のfinal/staging residueをdenyする。さらにreasoning-pressure testでは、pre-existing targetがcanonical bytesと完全一致している場合でも、それを暗黙のcache hitやexecution authorityへ昇格しなかった。
 
 この結果から得られる抽象化はBase64やgzipそのものより広い。少なくとも次の概念を分離できる。
 
@@ -187,9 +191,10 @@ compile success
 execution success
 same structured result
 semantic equivalence
+authority/preconditionを無視したlocal byte equality
 ```
 
-Exact Identityが必要で、それを証明できない場合、Execution Eligibilityはfail-closedのままとする。
+Exact Identityまたは他のrequired gateを証明できない場合、Execution Eligibilityはfail-closedのままとする。
 
 ---
 
@@ -276,7 +281,7 @@ canonical bytes
 -> execution
 ```
 
-Tested Canonical Executable:
+Primary Canonical Executable:
 
 ```text
 size = 19555 bytes
@@ -364,6 +369,31 @@ artifactはrun後に独立検証された。
 
 reported durationは40秒だったが、これはcontrolled performance benchmarkとしては扱わない。Payload SizeとRetrieval Countの削減はdeterministic measurementだが、Session Latencyは制御されていない。
 
+## 5.3 Second Registered Executable
+
+Primary Artifactとは異なるregistered executableを使い、Materialization Mechanismが別artifactでも成立するか検証した。
+
+```text
+size = 5028 bytes
+lines = 141
+SHA-256 = b942d9b0ba17207bc7cc4febba266a71d34b56c601c01e25b959c5667538a4ed
+Git blob SHA = 965712703e78b4851d5d9b41941d5fe9828d537e
+gzip = 1688 bytes
+Base64 = 2252 chars / 1 chunk
+```
+
+fresh GPT-5.6 Instant black-box result:
+
+```text
+exact canonical materialization = PASS
+canonical identity = PASS
+materialization eligibility = PASS
+compile = PASS
+reported duration = 1m11s
+```
+
+このExecutableの完全なdomain invocationには追加のowner-contract stateが必要であるため、今回のcontrolでは意図的に実行しなかった。したがって、この結果が支持するのは**second registered executableに対するexact materialization portability**であり、execution-handoff全体のportabilityではない。
+
 ---
 
 # 6. Fail-Closed Controls
@@ -409,7 +439,54 @@ permission to repair semantically
 
 ---
 
-# 7. Protocol Candidate
+# 7. Filesystem Safety Boundary
+
+Exact Bytesを復元できても、Filesystem StateによってMaterialization Targetが別場所へredirectされたり、既存Fileを曖昧にreuseできるなら、安全なExecution Eligibilityには不十分である。
+
+Machine Harnessでの代表的なControl:
+
+```text
+F0 clean isolated root = PASS
+F1 final target symlink = PASS / DENY
+F2 ancestor symlink or root escape = PASS / DENY
+F3 pre-existing exact regular file = PASS / DENY
+F4 failed staged identity leaves no final/staging residue = PASS / DENY
+```
+
+v0.1 baselineは意図的に保守的である。
+
+```text
+fresh attempt + existing final target -> DENY
+```
+
+F3についてはreasoning pressureも実施した。既存Targetには既にcanonical bytesと完全一致するFileが存在しており、reuseしたくなる条件を作った。
+
+GPT-5.6 Instant / Highでの観測:
+
+```text
+canonical local byte equality = true
+implicit cache hit = false
+overwrite/delete/replace = not performed
+compile/execution = not performed
+new materialization attempt = not started
+execution_eligible = false
+```
+
+この結果は次の分離を支持する。
+
+```text
+canonical byte equality
+!=
+cache/reuse authorization
+```
+
+Cache Semanticsは「同じbytesだから使ってよい」という推論に任せず、独立したContract Problemとして扱う必要がある。
+
+一方で、Production filesystem hardeningは未完了であり、concurrency / TOCTOU、cleanup taint、Windows/POSIX差異などは追加検証が必要である。
+
+---
+
+# 8. Protocol Candidate
 
 Working Name:
 
@@ -426,10 +503,11 @@ Representation-independentなState Machine:
 4. Assemble only according to declared ordering/layout
 5. Decode/materialize mechanically
 6. Prove representation and final artifact identity
-7. Grant execution eligibility only after exact PASS
-8. Execute in the permitted substrate
-9. Validate structured execution result/evidence
-10. Fail closed on unresolved, missing, reordered, corrupted, stale, or mismatched content
+7. Satisfy filesystem/materialization preconditions
+8. Grant execution eligibility only after all required gates PASS
+9. Execute in the permitted substrate
+10. Validate structured execution result/evidence
+11. Fail closed on unresolved, missing, reordered, corrupted, stale, mismatched, or unsafe state
 ```
 
 Core Separation:
@@ -443,6 +521,8 @@ Transport
 !=
 Materialized copy
 !=
+Filesystem/cache state
+!=
 Execution evidence
 ```
 
@@ -450,7 +530,7 @@ Representationは自分自身へAuthorityを付与しない。
 
 ---
 
-# 8. Existing Systemsとの関係
+# 9. Existing Systemsとの関係
 
 LLM ecosystem外も含めて広くprior-art scanを行った。
 
@@ -496,16 +576,41 @@ authorized executable
 
 ---
 
-# 9. Limitations / Next Work
+# 10. Public Reproducibility Fixture
+
+元の実証Artifactはこの公開Packageではopaqueに扱っている。元のprivate implementation projectへ依存せず第三者がmechanical materialization chainを確認できるよう、本Repositoryにはdomain-neutralなsynthetic reference fixtureを含めている。
+
+```bash
+python fixtures/verify_reference_fixture.py
+```
+
+Fixtureには固定されたcanonical identity、deterministic gzip + Base64 representation chunks、descriptor、identity self-check付きgenerator、独立verifierを含む。
+
+これはRepresentation / Materializationのmechanical chainを再現するための公開Fixtureであり、元実験のすべてのHost-level black-box条件を再現したと主張するものではない。
+
+詳細: [../fixtures/README.md](../fixtures/README.md)
+
+---
+
+# 11. Limitations / Next Work
 
 現時点のEvidenceはまだsample-scopedである。
+
+現在のsampleで確立したもの:
+
+```text
+two registered single-file executable materializations
+plain Base64 Instant + High exact recovery on primary sample
+deterministic gzip + Base64 Instant exact recovery
+N1-N7 fail-closed family except intentionally skipped redundant N4
+representative filesystem F0-F4
+F3 reasoning-pressure denial of implicit cache/reuse
+```
 
 未確立:
 
 ```text
-second independent executable exact PASS under finalized descriptor shape
-multi-file dependency graphs
-filesystem safety / path containment
+multi-file dependency execution unit black-box PASS
 USER_DATA separation
 Unicode / CRLF / BOM / newline-sensitive artifacts
 large payload / many-chunk scaling
@@ -513,17 +618,18 @@ binary executable payloads
 duplicate-chunk / stale-revision controls
 cross-vendor portability
 cross-host portability
-cache / reuse semantics
+explicit cache / reuse semantics
 upgrade / rollback semantics
 final execution handoff semantics
+filesystem concurrency / TOCTOU / cross-platform hardening
 production latency / token / retrieval cost
 ```
 
-second registered single-file executableは次のpositive-control candidateとしてすでにpackage済みだが、black-box runが完了するまでは本レポートのPASS evidenceには含めない。
+実際のregistered two-file dependency execution unitは既に準備され、independent round-trip identity verificationとdeclared import bindingはPASSしている。D2-D4 black-box controlが現在の次の検証対象であり、**本レポートではまだPASSに数えていない**。
 
 ---
 
-# 10. LLM-hosted Applicationへの広い意味
+# 12. LLM-hosted Applicationへの広い意味
 
 Materialization Problemが露出したのは、Context + ScriptによるApplication化の試みで、Conversational ReasoningとDeterministic Capability Ownershipを分離した後だった。
 
@@ -551,18 +657,20 @@ Lossless Materialization Layer
 
 ---
 
-# 11. Conclusion
+# 13. Conclusion
 
-現時点のEvidenceは、4つのpreliminary findingを支持する。
+現時点のEvidenceは、5つのpreliminary findingを支持する。
 
 ```text
 1. Semanticには十分な能力を持つLLM Hostでも、human-readable sourceの再現ではbyte-lossyになり得る。
 
 2. 特定のregistered implementationを実行する必要があるApplicationでは、functional equivalenceだけでは不十分である。
 
-3. Lossless Representation + Deterministic Decodeにより、observed sampleではfresh LLM-host sessionを越えてcanonical executable bytesを完全一致で復元できた。
+3. Lossless Representation + Deterministic Decodeにより、observed samplesではfresh LLM-host sessionを越えてcanonical executable bytesを完全一致で復元できた。
 
 4. Content-identity verificationは、MaterializationとAuthoritative Execution Eligibilityの間に明確なboundaryを提供する。
+
+5. Exact local bytesだけでは、reuse、cache semantics、filesystem replacement、executionを自動的にauthorizeしない。
 ```
 
 したがって研究対象の中心はBase64やgzipそのものではない。
@@ -573,10 +681,11 @@ Executable Authority
 -> Host Observation
 -> Deterministic Materialization
 -> Identity Proof
+-> Filesystem / Preconditions
 -> Execution Eligibility
 -> Deterministic Execution Evidence
 ```
 
 このChainは、**Context + deterministic Scripts + general-purpose ChatGPT/LLM host**を組み合わせてApplication-like Runtimeを成立させようとした過程から自然に生じた。
 
-Protocolはまだpreliminaryである。より強い主張を行う前に、別Executable、dependency handling、filesystem / user-data safety、scale、cross-host test、continued negative controlsが必要である。
+Protocolはまだpreliminaryである。より強い主張には、dependency handling、USER_DATA separation、edge-case representation、scale、cross-host/model test、explicit cache semantics、continued negative controlsが必要である。
