@@ -39,7 +39,7 @@ Where an AI assistant proposes an explanation, architecture, or protocol rule, t
 
 AI systems are not listed as authors or accountable researchers.
 
-The human researcher retains responsibility for:
+**Jumpei Fujii** retains responsibility for:
 
 - deciding the research direction;
 - selecting what is tested;
