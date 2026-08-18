@@ -4,7 +4,7 @@ This roadmap separates **evidence needed for publication**, **evidence needed fo
 
 ## Phase 0 — Preliminary feasibility
 
-Status: substantially complete for the primary sample.
+Status: complete for the current positive-control scope.
 
 ```text
 [x] human-readable source counterexample: functional PASS / byte identity FAIL
@@ -31,37 +31,68 @@ Status: strong for the primary sample, not universal.
 [ ] transport-normalization edge cases
 ```
 
+N4 dedicated gzip corruption remains intentionally skipped because N3 already proves the required compressed-identity gate before decompression.
+
 ## Phase 2 — Generalization beyond one executable
 
 ```text
-[ ] second independent registered executable black-box PASS
+[x] second independent registered executable black-box exact-materialization PASS
 [ ] third artifact with materially different source shape
 [ ] Unicode/newline-sensitive artifact
 [ ] larger payload / many chunks
 [ ] tiny/empty/final-padding boundary cases
 ```
 
+The second executable confirms exact materialization/identity portability across two distinct registered single-file artifacts. Full domain execution for that control was intentionally outside scope because its owner contract requires additional state.
+
 ## Phase 3 — Execution-unit semantics
 
+Status: dependency fixture prepared; black-box controls next.
+
 ```text
-[ ] multi-file execution unit
-[ ] declared executable dependency identity
-[ ] undeclared executable dependency rejection
-[ ] dependency identity mismatch rejection
-[ ] data dependency does not inherit executable authority
+[ ] D2 declared multi-file execution unit positive control
+[ ] D3 undeclared executable dependency rejection
+[ ] D4 dependency identity mismatch rejection
+[ ] D5 data dependency does not inherit executable authority
 [ ] cycle / duplicate dependency semantics
 ```
 
-## Phase 4 — Sandbox and filesystem safety
+Preparation already complete:
 
 ```text
-[ ] canonical output base directory
-[ ] path traversal rejection
-[ ] absolute-path rejection
-[ ] overwrite policy
-[ ] symlink / alias behavior where relevant
-[ ] materialized file permissions
+[x] real two-file registered execution unit selected
+[x] deterministic representation generated
+[x] independent round-trip identity verification
+[x] declared import binding verification
 ```
+
+Prepared controls are not counted as PASS until black-box runs complete.
+
+## Phase 4 — Sandbox and filesystem safety
+
+Representative v0.1 materialization preconditions are now validated.
+
+```text
+[x] F0 clean isolated root
+[x] F1 final target symlink -> DENY
+[x] F2 ancestor symlink/root escape -> DENY
+[x] F3 pre-existing final regular file -> DENY
+[x] F4 failed staged identity leaves no final/staging residue
+[x] F3 reasoning pressure: exact existing bytes do not imply cache/reuse authority
+[ ] F5 concurrency/race controls
+[ ] F6 TOCTOU hardening
+[ ] F7 cleanup-taint semantics
+[ ] F8 Windows/POSIX behavior
+[ ] final materialized permission policy
+```
+
+Current baseline:
+
+```text
+fresh attempt + existing final target -> DENY
+```
+
+Cache/reuse remains a separate phase rather than an inferred filesystem convenience.
 
 ## Phase 5 — User data and context separation
 
@@ -106,7 +137,7 @@ Status: strong for the primary sample, not universal.
 ## Phase 9 — Specification hardening
 
 ```text
-[ ] descriptor schema
+[ ] descriptor schema finalization
 [ ] reference validator
 [ ] normative failure codes
 [ ] profile registry model
@@ -120,13 +151,17 @@ Status: strong for the primary sample, not universal.
 
 ### Preliminary public release
 
-Already supportable if clearly framed as preliminary:
+**Current status: supportable**, provided the repository remains clearly framed as preliminary research / protocol candidate.
+
+Current basis:
 
 ```text
-positive exact materialization evidence
-+ meaningful negative counterexample
-+ fail-closed controls
-+ limitations
+positive exact materialization across two registered single-file executables
++ meaningful plain-source counterexample
++ fail-closed N-controls
++ representative filesystem safety controls
++ public synthetic reproduction fixture
++ explicit limitations
 + prior-art scan
 + open reproduction invitation
 ```
@@ -136,15 +171,15 @@ positive exact materialization evidence
 Prefer:
 
 ```text
->= 2 independent executables
-+ multi-file/dependency evidence
-+ deliberate corruption controls
+multi-file/dependency black-box evidence
++ deliberate corruption controls across execution units
 + Unicode/large-payload edge cases
 + at least one cross-host/model result
++ clearer descriptor/schema stabilization
 ```
 
 ### Production integration
 
-Requires substantially broader validation than publication.
+Requires substantially broader validation than publication, especially around filesystem concurrency, cache/reuse, user-data separation, dependency closure, execution handoff, upgrades, and host portability.
 
 The research should not collapse those thresholds into one.
