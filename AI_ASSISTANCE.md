@@ -21,7 +21,7 @@ AI-generated text, code, interpretation, or confidence is **not treated as exper
 Claims in this repository are intended to be grounded in inspectable or reproducible evidence such as:
 
 ```text
-public canonical artifact identities
+canonical artifact identities
 cryptographic hashes
 Git blob identities where applicable
 published representation units
@@ -51,8 +51,8 @@ AI systems are not listed as authors or accountable researchers.
 
 ## Scope of this disclosure
 
-This disclosure applies to the work published in this repository: the **Lossless Executable Materialization protocol candidate**, its public fixtures, experiments, and documentation.
+This disclosure applies to the work published in this repository: the **Lossless Executable Materialization protocol candidate**, its experiments, fixtures, and documentation.
 
-It should not be read as a description of any broader research program, application implementation, or upstream project.
+It should not be read as documentation of a broader research program unrelated to this protocol.
 
-The disclosure is intentionally explicit because AI was used heavily both as a research/engineering assistant and, in controlled experiments, as part of the runtime class being studied. The distinction between those roles should be preserved when interpreting results.
+The disclosure is intentionally explicit because AI was used heavily both as a research/engineering assistant and, in controlled experiments, as part of the runtime being studied. The distinction between those roles should be preserved when interpreting results.
