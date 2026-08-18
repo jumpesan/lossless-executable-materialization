@@ -4,27 +4,17 @@
 
 Author: **Jumpei Fujii**
 
-This is the first public-facing release candidate for the Lossless Executable Materialization research.
+This is the first public-facing release candidate for the **Lossless Executable Materialization** protocol research.
 
-The work emerged while exploring whether:
-
-```text
-structured Context
-+ deterministic Scripts
-+ general-purpose ChatGPT / LLM host
-+ user interaction
--> application-like runtime behavior
-```
-
-could support deterministic application capabilities without requiring a conventional dedicated runtime for every interaction.
-
-The central problem discovered during that work was:
+The protocol candidate emerged from real LLM-hosted application development after a runtime reached the following boundary:
 
 ```text
 LLM understands which executable should run
 !=
 the exact authorized executable bytes are available in the sandbox
 ```
+
+The research asks how an authorized executable can be represented losslessly, materialized mechanically, verified against canonical identity, and made execution-eligible only after the required gates pass.
 
 ## Main observation
 
@@ -106,7 +96,7 @@ The current abstraction separates:
 ```text
 Executable Authority
 -> Lossless Representation
--> Host Observation / Acquisition
+-> Representation Acquisition
 -> Deterministic Materialization
 -> Identity Proof
 -> Filesystem / Materialization Preconditions
@@ -120,7 +110,7 @@ It also does not claim that the current protocol candidate is standardized, prod
 
 ## Public reproduction
 
-A domain-neutral synthetic reference fixture is included so the materialization chain can be inspected without access to the private implementation project that originally exposed the problem.
+A domain-neutral synthetic reference fixture is included so the materialization chain can be inspected without depending on the application domain that originally exposed the problem.
 
 ```bash
 python fixtures/verify_reference_fixture.py
