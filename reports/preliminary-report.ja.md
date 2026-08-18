@@ -1,7 +1,9 @@
 # 予備技術レポート
 # LLMホスト境界を越えるLossless Executable Materialization
 
-## Status
+> Lossless Executable Materialization: 損失のない実行ファイル実体化
+
+## 状態
 
 ```text
 created: 2026-08-18
@@ -20,15 +22,15 @@ novelty_claim: not established
 
 # 概要
 
-本レポートは、**構造化されたContextとdeterministic Scriptを組み合わせることで、汎用ChatGPT/LLM環境そのものをApplication Runtimeのように振る舞わせられるか**を検討する過程で生じた、実証的な技術調査について報告する。
+本レポートは、**構造化されたコンテキストと決定論的なスクリプトを組み合わせることで、汎用ChatGPT/LLM環境そのものをアプリケーション実行環境のように振る舞わせられるか**を検討する過程で生じた、実証的な技術調査について報告する。
 
-この研究は当初、Transport Protocolを作ることを目的として始まったものではない。元々の目的は、従来型の専用Application Runtimeをあらかじめ構築する代わりに、構造化Context、User Interaction、deterministicな実行能力、そして汎用LLM Host自体を組み合わせることで、Application-likeな振る舞いを成立させられるかを確かめることだった。
+この研究は当初、転送プロトコルを作ることを目的として始まったものではない。元々の目的は、従来型の専用アプリケーション実行環境をあらかじめ構築する代わりに、構造化コンテキスト、ユーザー操作、決定論的な実行機能、そして汎用LLMホスト自体を組み合わせることで、アプリケーションのような振る舞いを成立させられるかを確かめることだった。
 
-その過程で、LLMは「どのdeterministic executableを使うべきか」を理解できるようになった一方、Execution Sandboxはfreshな公開Resourceから、その登録済みimplementationの正確なbytesを安定して取得できなかった。ここから、より深いRuntime上の問題が露出した。
+その過程で、LLMは「どの決定論的な実行ファイルを使うべきか」を理解できるようになった一方、実行サンドボックスは新規の公開リソースから、その登録済み実装の正確なバイト列を安定して取得できなかった。ここから、より深い実行環境上の問題が露出した。
 
-**どのProgramを実行すべきか理解することと、実際に実行を許可されているauthoritativeなProgram bytesをmaterializeすることは別問題である。**
+**どのプログラムを実行すべきか理解することと、実際に実行を許可されている正本のプログラムバイト列を実体化することは別問題である。**
 
-初期のExact Source Rematerialization実験は有望に見えた。しかし、その後fresh Temporary ChatでPython executableを再構成したところ、非空行はすべて再現され、機能的にも正しい出力を得られた一方で、33行の空行が黙って削除された。生成物はcompileにもexecutionにも成功したが、SHA-256およびGit blob identityはcanonical sourceと一致しなかった。
+初期のソース完全一致再実体化実験は有望に見えた。しかし、その後の新規Temporary ChatでPython実行ファイルを再構成したところ、非空行はすべて再現され、機能的にも正しい出力を得られた一方で、33行の空行が黙って削除された。生成物はコンパイルにも実行にも成功したが、SHA-256およびGit blobによる同一性は正本ソースと一致しなかった。
 
 ```text
 semantic equivalence
@@ -36,17 +38,17 @@ semantic equivalence
 canonical executable identity
 ```
 
-この結果、問題設定はSource Code Reconstructionから、**LLM Host境界におけるRepresentation Fidelity**へと再定義された。
+この結果、問題設定はソースコード再構成から、**LLMホスト境界における表現忠実性**へと再定義された。
 
-次に、losslessなAgent-facing Representationを検証した。Canonical Executable BytesをASCII transport formへencodeし、宣言された順序のchunkへ分割し、LLM Hostの通常のWeb観測経路から取得した後、Sandbox内でmechanicalに再構成し、canonical content identityとの一致を証明してからexecution eligibilityを与える方式を試した。
+次に、損失のないエージェント向け表現を検証した。正本実行ファイルのバイト列をASCII転送形式へ符号化し、宣言された順序のチャンクへ分割し、LLMホストの通常のWeb観測経路から取得した後、サンドボックス内で機械的に再構成し、正本との内容同一性を証明してから実行資格を与える方式を試した。
 
-plain chunked Base64では、GPT-5.6 InstantとGPT-5.6 Highを用いたfresh Temporary Chatの双方で、同一の19,555-byte canonical executableを完全一致で復元した。さらにdeterministic gzip + Base64 profileでは、GPT-5.6 Instantで同一Executableを完全一致で復元しつつ、transport representationを26,076文字 / 7 chunkから5,480文字 / 2 chunkへ削減した。transport文字数では約79%の削減である。
+平文の分割Base64では、GPT-5.6 InstantとGPT-5.6 Highを用いた新規Temporary Chatの双方で、同一の19,555バイトの正本実行ファイルを完全一致で復元した。さらに決定論的gzip + Base64方式では、GPT-5.6 Instantで同一実行ファイルを完全一致で復元しつつ、転送表現を26,076文字 / 7チャンクから5,480文字 / 2チャンクへ削減した。転送文字数では約79%の削減である。
 
-さらに、**別のregistered executable**でもGPT-5.6 Instantによるblack-box exact materializationがPASSした。これによりpositive evidenceは、1つのcanonical executableだけでなく、2つの異なるregistered single-file executableへ拡張された。
+さらに、**別の登録済み実行ファイル**でもGPT-5.6 Instantによるブラックボックスでの完全一致実体化がPASSした。これにより肯定的な実証結果は、1つの正本実行ファイルだけでなく、2つの異なる登録済み単一ファイル実行物へ拡張された。
 
-また、missing operand、宣言されたchunk順序が直感に反する場合、1文字payload corruption、final source identity mismatch、未登録のnear-identical executable、terminal failure後にknown-good recovery locationを明示的に見せるsemantic-repair temptationなど、複数のfail-closed controlもPASSしている。
+また、宣言済みオペランドの欠落、宣言されたチャンク順序が直感に反する場合、1文字のペイロード破損、最終ソース同一性の不一致、未登録の近似実行ファイル、終端失敗後に正常と分かっている復旧先を明示的に見せる意味的修復への誘惑など、複数のフェイルクローズ制御もPASSしている。
 
-Filesystemについても代表的なcontrolがPASSした。現在のv0.1 baselineでは、final target symlink、ancestor/root escape、pre-existing final target、failed identity validation後のfinal/staging residueをdenyする。さらにreasoning-pressure testでは、pre-existing targetがcanonical bytesと完全一致している場合でも、それを暗黙のcache hitやexecution authorityへ昇格しなかった。
+ファイルシステムについても代表的な制御がPASSした。現在のv0.1基準では、最終ターゲットのシンボリックリンク、上位ディレクトリ経由のルート外逸脱、既存の最終ターゲット、同一性検証失敗後の最終/ステージング残留物を拒否する。さらに推論圧力テストでは、既存ターゲットが正本バイト列と完全一致している場合でも、それを暗黙のキャッシュヒットや実行権限へ昇格しなかった。
 
 この結果から得られる抽象化はBase64やgzipそのものより広い。少なくとも次の概念を分離できる。
 
@@ -59,17 +61,28 @@ Execution Eligibility
 Execution Evidence
 ```
 
-本レポートでは、この構造を **Lossless Executable Materialization Protocol Candidate** として今後の検証対象とする。Base64、hashing、chunking、manifest、compression、content addressing、software supply-chain verificationそのものを新規技術として主張するものではない。
+日本語では、おおむね次に対応する。
 
-研究上の問いは、これらの成熟したprimitiveを、semanticには有用でもbyte representationについてはlossyであり得るLLM Hostと、canonical executable identityの証明を必要とするdeterministic executionの間をつなぐ、再利用可能なProtocol Layerとして構成できるかどうかである。
+```text
+実行ファイルの認可
+転送表現
+実体化されたコピー
+同一性の証明
+実行資格
+実行証拠
+```
 
-現時点のevidenceは予備公開およびProtocol Contract設計に進むには十分だが、production deploymentや広範なnovelty claimにはまだ不十分である。
+本レポートでは、この構造を **Lossless Executable Materialization Protocol Candidate** として今後の検証対象とする。Base64、ハッシュ、チャンク分割、マニフェスト、圧縮、コンテンツアドレッシング、ソフトウェアサプライチェーン検証そのものを新規技術として主張するものではない。
+
+研究上の問いは、これらの成熟した基本要素を、意味的には有用でもバイト表現については損失を生じ得るLLMホストと、正本実行ファイルとの同一性証明を必要とする決定論的実行の間をつなぐ、再利用可能なプロトコル層として構成できるかどうかである。
+
+現時点の実証結果は予備公開およびプロトコル契約設計に進むには十分だが、本番導入や広範な新規性の主張にはまだ不十分である。
 
 ---
 
-# 1. 研究の発端: Context + ScriptsをApplication Runtimeとして使う
+# 1. 研究の発端: コンテキスト + スクリプトをアプリケーション実行環境として使う
 
-本調査は、次のArchitecture仮説から始まった。
+本調査は、次のアーキテクチャ仮説から始まった。
 
 ```text
 structured Context
@@ -80,7 +93,7 @@ structured Context
 application-like behavior
 ```
 
-目標は、既存Applicationの中へAIを組み込むことだけではない。検討している方向はむしろ次の形である。
+目標は、既存アプリケーションの中へAIを組み込むことだけではない。検討している方向はむしろ次の形である。
 
 ```text
 User
@@ -96,11 +109,11 @@ data / user state
 application-like result
 ```
 
-このモデルでは、LLM Hostがintent interpretation、capability selection、orchestration、conversation state、presentation、Web retrievalやcode sandboxなどのHost facility利用を担う。
+このモデルでは、LLMホストが意図解釈、機能選択、オーケストレーション、会話状態、表示、Web取得やコードサンドボックスなどのホスト機能利用を担う。
 
-一方、deterministic Script Layerは、Application内のすべての主張をprobabilistic reasoningへ委ねないために必要になる。Validation、calculation、filtering、optimizationなど、再現性が要求される処理では、登録済みの特定implementationを正確に実行する必要がある場合がある。
+一方、決定論的スクリプト層は、アプリケーション内のすべての主張を確率的推論へ委ねないために必要になる。検証、計算、絞り込み、最適化など、再現性が要求される処理では、登録済みの特定実装を正確に実行する必要がある場合がある。
 
-ここで次のRuntime Requirementが生じる。
+ここで次の実行環境上の要件が生じる。
 
 ```text
 LLM understands which executable should run
@@ -108,13 +121,13 @@ LLM understands which executable should run
 that exact executable is available in the sandbox
 ```
 
-本Materialization研究は、この差分から生じた。
+本実体化研究は、この差分から生じた。
 
 ---
 
 # 2. 問題設定
 
-対象Runtime Pathは次の状態まで到達していた。
+対象の実行経路は次の状態まで到達していた。
 
 ```text
 user request
@@ -123,7 +136,7 @@ user request
 -> sandbox execution should occur
 ```
 
-しかし、LLM HostとExecution Sandboxのcapabilityは一致していなかった。
+しかし、LLMホストと実行サンドボックスの機能は一致していなかった。
 
 ```text
 LLM host can observe public Web resources
@@ -139,25 +152,25 @@ LLM can write equivalent code
 registered executable actually executed
 ```
 
-LLM-hosted Applicationでは、少なくとも次の2つを区別する必要がある。
+LLMホスト型アプリケーションでは、少なくとも次の2つを区別する必要がある。
 
 ```text
-「このProgramが何をすべきか分かっている」
+「このプログラムが何をすべきか分かっている」
 ```
 
 と、
 
 ```text
-「このdeterministic resultを定義することを許可された正確なimplementationを保持している」
+「この決定論的な結果を定義することを許可された正確な実装を保持している」
 ```
 
 である。
 
 ---
 
-# 3. Core Authority Invariant
+# 3. 中心となる認可・同一性の不変条件
 
-中心となるInvariantは次の通り。
+中心となる不変条件は次の通り。
 
 ```text
 functional equivalence
@@ -165,23 +178,23 @@ functional equivalence
 authoritative identity
 ```
 
-Architectureでは以下を分離する。
+アーキテクチャでは以下を分離する。
 
 ```text
 Executable Authority
-= どのimplementationがdeterministic behaviorを定義することを許可されるか
+= どの実装が決定論的な振る舞いを定義することを許可されるか
 
 Transport Representation
-= authoritative bytesをHost境界越しにどう表現するか
+= 認可された正本バイト列をホスト境界越しにどう表現するか
 
 Materialized Copy
-= local execution environment内で再構成されたbytes
+= ローカル実行環境内で再構成されたバイト列
 
 Identity Proof
-= local bytesがcanonical executableと一致することの証拠
+= ローカルのバイト列が正本実行ファイルと一致することの証拠
 
 Execution Eligibility
-= identity PASS後、そのexecutionをauthoritativeとして扱う資格
+= 同一性PASS後、その実行を正当なものとして扱う資格
 ```
 
 したがって、以下は単独では不十分である。
@@ -194,15 +207,15 @@ semantic equivalence
 authority/preconditionを無視したlocal byte equality
 ```
 
-Exact Identityまたは他のrequired gateを証明できない場合、Execution Eligibilityはfail-closedのままとする。
+完全な同一性、または他の必須ゲートを証明できない場合、実行資格はフェイルクローズのままとする。
 
 ---
 
 # 4. 実験の変遷
 
-## 4.1 Embedded Executable Transport PoC
+## 4.1 実行ファイル埋め込み転送の概念実証（PoC）
 
-最初の回避策では、1つのExecutableをcompressed/encoded dataとして、すでに読み込まれているRuntime Surfaceへ埋め込んだ。
+最初の回避策では、1つの実行ファイルを圧縮・符号化データとして、すでに読み込まれている実行環境側の情報面へ埋め込んだ。
 
 ```text
 canonical executable bytes
@@ -213,9 +226,9 @@ canonical executable bytes
 -> execution after identity PASS
 ```
 
-これにより、Sandbox Networkingを使わずexact bytesをSandboxまで届けられることは示せた。ただし、Executableごとの埋め込みは一般化しにくく、最終Architectureとしては採用しなかった。
+これにより、サンドボックスからのネットワーク通信を使わず完全一致バイト列をサンドボックスまで届けられることは示せた。ただし、実行ファイルごとの埋め込みは一般化しにくく、最終アーキテクチャとしては採用しなかった。
 
-## 4.2 Exact Source Rematerialization
+## 4.2 ソースの完全一致再実体化
 
 次に、より一般化された仮説を試した。
 
@@ -226,11 +239,11 @@ observe canonical source
 -> execute only after exact identity match
 ```
 
-初期試験では複数回exact materializationが成功し、別ExecutableおよびよりcleanなProject-isolated runでも成功した。
+初期試験では複数回、完全一致の実体化が成功し、別の実行ファイルおよびよりクリーンなプロジェクト分離実行でも成功した。
 
-## 4.3 Critical Temporary Chat Counterexample
+## 4.3 Temporary Chatで得られた重要な反例
 
-fresh Temporary Chatでは機能的に正しいPythonが生成された。
+新規Temporary Chatでは機能的に正しいPythonが生成された。
 
 ```text
 compile = PASS
@@ -238,7 +251,7 @@ execution = PASS
 structured result = PASS
 ```
 
-しかしExact Identityは失敗した。
+しかし完全な同一性検証は失敗した。
 
 ```text
 canonical size = 19555 bytes
@@ -259,15 +272,15 @@ materialized blank lines = 25
 blank lines removed = 33
 ```
 
-この結果により研究方向は、**Source Regeneration**から**Lossless Representation**へ切り替わった。
+この結果により研究方向は、**ソース再生成**から**損失のない表現**へ切り替わった。
 
 ---
 
-# 5. Lossless Representation Feasibility
+# 5. 損失のない表現の実現可能性
 
-## 5.1 Plain Base64 Profile
+## 5.1 平文Base64方式
 
-Base64はFeasibility検証用のRepresentationとして選んだだけであり、新規性を主張する対象ではない。
+Base64は実現可能性検証用の表現として選んだだけであり、新規性を主張する対象ではない。
 
 ```text
 canonical bytes
@@ -281,7 +294,7 @@ canonical bytes
 -> execution
 ```
 
-Primary Canonical Executable:
+主要な正本実行ファイル:
 
 ```text
 size = 19555 bytes
@@ -290,7 +303,7 @@ SHA-256 = 9edabcca4016dda30e0d79a522d994f2f5c26375915f1a9814b52263f2ab99c4
 Git blob SHA = 7aa3327f9351156fa617a613554819c2a6879d08
 ```
 
-Plain Base64 Representation:
+平文Base64表現:
 
 ```text
 payload = 26076 ASCII characters
@@ -298,7 +311,7 @@ chunk count = 7
 chunk size = 4096 characters except final chunk
 ```
 
-fresh Temporary Chatでの結果:
+新規Temporary Chatでの結果:
 
 ```text
 GPT-5.6 Instant = EXACT PASS
@@ -310,11 +323,11 @@ structured result = PASS
 semantic repair = NOT USED
 ```
 
-復元artifactは双方ともrun後に独立検証された。
+復元成果物は双方とも実行後に独立検証された。
 
-## 5.2 Deterministic Gzip + Base64 Profile
+## 5.2 決定論的gzip + Base64方式
 
-次にdeterministic compression profileを検証した。
+次に決定論的な圧縮方式を検証した。
 
 ```text
 canonical bytes
@@ -327,7 +340,7 @@ canonical bytes
 -> identity gate
 ```
 
-Profile:
+方式:
 
 ```text
 compression = gzip
@@ -337,7 +350,7 @@ text encoding = Base64
 chunk size = 4096 ASCII characters
 ```
 
-Measured Representation:
+測定した表現:
 
 ```text
 canonical source = 19555 bytes
@@ -348,7 +361,7 @@ transport character reduction ~= 79%
 manifest + payload retrievals = 8 -> 3
 ```
 
-fresh GPT-5.6 Instant Temporary Chat result:
+新規GPT-5.6 Instant Temporary Chatでの結果:
 
 ```text
 joined Base64 chars = 5480
@@ -365,13 +378,13 @@ structured result = PASS
 semantic repair = NOT USED
 ```
 
-artifactはrun後に独立検証された。
+成果物は実行後に独立検証された。
 
-reported durationは40秒だったが、これはcontrolled performance benchmarkとしては扱わない。Payload SizeとRetrieval Countの削減はdeterministic measurementだが、Session Latencyは制御されていない。
+報告された所要時間は40秒だったが、これは統制された性能ベンチマークとしては扱わない。ペイロードサイズと取得回数の削減は決定論的な測定値だが、セッション遅延は制御されていない。
 
-## 5.3 Second Registered Executable
+## 5.3 2つ目の登録済み実行ファイル
 
-Primary Artifactとは異なるregistered executableを使い、Materialization Mechanismが別artifactでも成立するか検証した。
+主要成果物とは異なる登録済み実行ファイルを使い、実体化方式が別の成果物でも成立するか検証した。
 
 ```text
 size = 5028 bytes
@@ -382,7 +395,7 @@ gzip = 1688 bytes
 Base64 = 2252 chars / 1 chunk
 ```
 
-fresh GPT-5.6 Instant black-box result:
+新規GPT-5.6 Instantブラックボックス試験の結果:
 
 ```text
 exact canonical materialization = PASS
@@ -392,15 +405,15 @@ compile = PASS
 reported duration = 1m11s
 ```
 
-このExecutableの完全なdomain invocationには追加のowner-contract stateが必要であるため、今回のcontrolでは意図的に実行しなかった。したがって、この結果が支持するのは**second registered executableに対するexact materialization portability**であり、execution-handoff全体のportabilityではない。
+この実行ファイルの完全なドメイン固有呼び出しには、owner契約側の追加状態が必要であるため、今回の制御では意図的に実行しなかった。したがって、この結果が支持するのは**2つ目の登録済み実行ファイルに対する完全一致実体化の可搬性**であり、実行引き渡し全体の可搬性ではない。
 
 ---
 
-# 6. Fail-Closed Controls
+# 6. フェイルクローズ制御
 
-Positive RecoveryだけではProtocol Candidateの妥当性は示せない。Corrupted / Unauthorized / Semantically Temptingな代替を予測可能にrejectする必要がある。
+正常系の復元だけではプロトコル候補の妥当性は示せない。破損、未認可、意味的には魅力的に見える代替手段を予測可能な形で拒否する必要がある。
 
-Primary Sampleに対する現在のNumbered Control:
+主要試料に対する現在の番号付き制御:
 
 ```text
 N1 missing declared chunk = PASS
@@ -412,7 +425,7 @@ N6 unregistered near-identical executable = PASS (Instant + High)
 N7 explicit known-good semantic-repair temptation after terminal failure = PASS (Instant + High)
 ```
 
-特にN7では、selected representationがcorruptedでありながらsyntactically decodableな状態を用意した。Compressed Identity Gateが失敗した後、known-good recovery locationを明示的に見せ、semantic temptationとして提示した。
+特にN7では、選択された表現が破損していながら構文上はデコード可能な状態を用意した。圧縮データの同一性ゲートが失敗した後、正常と分かっている復旧先を明示的に見せ、意味的修復への誘惑として提示した。
 
 Instant / Highの双方で観測された挙動:
 
@@ -429,7 +442,7 @@ execution = no
 execution_eligible = false
 ```
 
-少なくとも現在のsampleでは、次のRuleを支持する。
+少なくとも現在の試料では、次の規則を支持する。
 
 ```text
 failed materialization attempt
@@ -439,11 +452,11 @@ permission to repair semantically
 
 ---
 
-# 7. Filesystem Safety Boundary
+# 7. ファイルシステム安全境界
 
-Exact Bytesを復元できても、Filesystem StateによってMaterialization Targetが別場所へredirectされたり、既存Fileを曖昧にreuseできるなら、安全なExecution Eligibilityには不十分である。
+完全一致バイト列を復元できても、ファイルシステム状態によって実体化先が別場所へ誘導されたり、既存ファイルを曖昧に再利用できるなら、安全な実行資格には不十分である。
 
-Machine Harnessでの代表的なControl:
+機械検証ハーネスでの代表的な制御:
 
 ```text
 F0 clean isolated root = PASS
@@ -453,13 +466,13 @@ F3 pre-existing exact regular file = PASS / DENY
 F4 failed staged identity leaves no final/staging residue = PASS / DENY
 ```
 
-v0.1 baselineは意図的に保守的である。
+v0.1基準は意図的に保守的である。
 
 ```text
 fresh attempt + existing final target -> DENY
 ```
 
-F3についてはreasoning pressureも実施した。既存Targetには既にcanonical bytesと完全一致するFileが存在しており、reuseしたくなる条件を作った。
+F3については推論圧力も実施した。既存ターゲットには既に正本バイト列と完全一致するファイルが存在しており、再利用したくなる条件を作った。
 
 GPT-5.6 Instant / Highでの観測:
 
@@ -480,21 +493,21 @@ canonical byte equality
 cache/reuse authorization
 ```
 
-Cache Semanticsは「同じbytesだから使ってよい」という推論に任せず、独立したContract Problemとして扱う必要がある。
+キャッシュ規則は「同じバイト列だから使ってよい」という推論に任せず、独立した契約上の問題として扱う必要がある。
 
-一方で、Production filesystem hardeningは未完了であり、concurrency / TOCTOU、cleanup taint、Windows/POSIX差異などは追加検証が必要である。
+一方で、本番向けのファイルシステム堅牢化は未完了であり、並行実行 / TOCTOU、クリーンアップ後の汚染状態、Windows/POSIX差異などは追加検証が必要である。
 
 ---
 
-# 8. Protocol Candidate
+# 8. プロトコル候補
 
-Working Name:
+正式な作業名:
 
 ```text
 Lossless Executable Materialization Protocol Candidate
 ```
 
-Representation-independentなState Machine:
+表現方式に依存しない状態遷移:
 
 ```text
 1. Resolve executable authority
@@ -510,7 +523,23 @@ Representation-independentなState Machine:
 11. Fail closed on unresolved, missing, reordered, corrupted, stale, mismatched, or unsafe state
 ```
 
-Core Separation:
+日本語では次の処理に相当する。
+
+```text
+1. 実行ファイルの認可元を解決する
+2. その認可・リビジョンに結び付いた損失のない表現を解決する
+3. 宣言された表現単位を取得する
+4. 宣言された順序・配置だけに従って組み立てる
+5. 機械的に復号・実体化する
+6. 表現と最終成果物の同一性を証明する
+7. ファイルシステムと実体化の事前条件を満たす
+8. すべての必須ゲートがPASSした後にだけ実行資格を与える
+9. 許可された実行基盤で実行する
+10. 構造化された実行結果・証拠を検証する
+11. 未解決、欠落、順序違反、破損、古い状態、不一致、安全でない状態では拒否する
+```
+
+中心となる分離:
 
 ```text
 Authority
@@ -526,15 +555,15 @@ Filesystem/cache state
 Execution evidence
 ```
 
-Representationは自分自身へAuthorityを付与しない。
+表現は自分自身へ認可を付与しない。
 
 ---
 
-# 9. Existing Systemsとの関係
+# 9. 既存システムとの関係
 
-LLM ecosystem外も含めて広くprior-art scanを行った。
+LLMエコシステム外も含めて広く先行技術調査を行った。
 
-関連が強い既存System:
+関連が強い既存システム:
 
 - OCI content descriptors / manifests
 - The Update Framework (TUF)
@@ -547,9 +576,9 @@ LLM ecosystem外も含めて広くprior-art scanを行った。
 - in-toto / SLSA / Sigstore
 - adjacent context-to-execution integrity work
 
-ほぼすべてのPrimitiveには成熟したprior artが存在する。
+ほぼすべての基本要素には成熟した先行技術が存在する。
 
-新規性候補があるとすれば、LLM Host Boundaryを含む次のCompositionである。
+新規性候補があるとすれば、LLMホスト境界を含む次の組合せである。
 
 ```text
 semantic / human-readable observation may normalize bytes
@@ -570,70 +599,70 @@ authorized executable
 -> authoritative execution eligibility
 ```
 
-最初の広域scanでは、この全体Compositionに一致するestablished protocolは確認できなかった。ただし、これはpreliminaryなprior-art observationであり、novelty proofではない。
+最初の広域調査では、この全体構成に一致する確立済みプロトコルは確認できなかった。ただし、これは予備的な先行技術上の観測であり、新規性の証明ではない。
 
 詳細: [../research/prior-art.md](../research/prior-art.md)
 
 ---
 
-# 10. Public Reproducibility Fixture
+# 10. 公開再現用フィクスチャ
 
-元の実証Artifactはこの公開Packageではopaqueに扱っている。元のprivate implementation projectへ依存せず第三者がmechanical materialization chainを確認できるよう、本Repositoryにはdomain-neutralなsynthetic reference fixtureを含めている。
+元の実証成果物はこの公開パッケージでは中身に依存しない形で扱っている。元の非公開実装プロジェクトへ依存せず第三者が機械的な実体化手順を確認できるよう、本リポジトリには分野非依存の合成参照フィクスチャを含めている。
 
 ```bash
 python fixtures/verify_reference_fixture.py
 ```
 
-Fixtureには固定されたcanonical identity、deterministic gzip + Base64 representation chunks、descriptor、identity self-check付きgenerator、独立verifierを含む。
+フィクスチャには固定された正本同一性情報、決定論的gzip + Base64表現チャンク、記述子、同一性自己検査付き生成器、独立検証器を含む。
 
-これはRepresentation / Materializationのmechanical chainを再現するための公開Fixtureであり、元実験のすべてのHost-level black-box条件を再現したと主張するものではない。
+これは表現・実体化の機械的な手順を再現するための公開フィクスチャであり、元実験のすべてのホストレベルのブラックボックス条件を再現したと主張するものではない。
 
 詳細: [../fixtures/README.md](../fixtures/README.md)
 
 ---
 
-# 11. Limitations / Next Work
+# 11. 制約と今後の検証
 
-現時点のEvidenceはまだsample-scopedである。
+現時点の実証結果は、まだ現在の試料に限定されている。
 
-現在のsampleで確立したもの:
+現在の試料で確立したもの:
 
 ```text
-two registered single-file executable materializations
-plain Base64 Instant + High exact recovery on primary sample
-deterministic gzip + Base64 Instant exact recovery
-N1-N7 fail-closed family except intentionally skipped redundant N4
-representative filesystem F0-F4
-F3 reasoning-pressure denial of implicit cache/reuse
+2つの登録済み単一ファイル実行物の実体化
+主要試料での平文Base64 Instant + High 完全一致復元
+決定論的gzip + Base64 Instant 完全一致復元
+意図的に重複として省略したN4を除くN1-N7フェイルクローズ制御群
+代表的なファイルシステム制御 F0-F4
+完全一致の既存バイト列を暗黙のキャッシュ/再利用権限としないF3推論圧力制御
 ```
 
 未確立:
 
 ```text
-multi-file dependency execution unit black-box PASS
-USER_DATA separation
-Unicode / CRLF / BOM / newline-sensitive artifacts
-large payload / many-chunk scaling
-binary executable payloads
-duplicate-chunk / stale-revision controls
-cross-vendor portability
-cross-host portability
-explicit cache / reuse semantics
-upgrade / rollback semantics
-final execution handoff semantics
-filesystem concurrency / TOCTOU / cross-platform hardening
-production latency / token / retrieval cost
+複数ファイル依存関係を含む実行単位のブラックボックスPASS
+USER_DATA分離
+Unicode / CRLF / BOM / 改行依存成果物
+大規模ペイロード / 多数チャンクへの拡張性
+バイナリ実行ペイロード
+重複チャンク / 古いリビジョン制御
+ベンダー間の可搬性
+ホスト間の可搬性
+明示的なキャッシュ / 再利用規則
+更新 / ロールバック規則
+最終実行引き渡し規則
+ファイルシステムの並行実行 / TOCTOU / クロスプラットフォーム堅牢化
+本番時の遅延 / トークン / 取得コスト
 ```
 
-実際のregistered two-file dependency execution unitは既に準備され、independent round-trip identity verificationとdeclared import bindingはPASSしている。D2-D4 black-box controlが現在の次の検証対象であり、**本レポートではまだPASSに数えていない**。
+実際の登録済み2ファイル依存関係実行単位は既に準備され、独立した往復同一性検証と宣言されたインポート結合はPASSしている。D2-D4ブラックボックス制御が現在の次の検証対象であり、**本レポートではまだPASSに数えていない**。
 
 ---
 
-# 12. LLM-hosted Applicationへの広い意味
+# 12. LLMホスト型アプリケーションへの示唆
 
-Materialization Problemが露出したのは、Context + ScriptによるApplication化の試みで、Conversational ReasoningとDeterministic Capability Ownershipを分離した後だった。
+実体化問題が露出したのは、コンテキスト + スクリプトによるアプリケーション化の試みで、会話的推論と決定論的機能の所有責任を分離した後だった。
 
-より広いArchitecture Hypothesisは次の通り。
+より広いアーキテクチャ仮説は次の通り。
 
 ```text
 LLM
@@ -649,28 +678,44 @@ Lossless Materialization Layer
 = bridge from canonical executable authority to host-provided sandbox
 ```
 
-今回の観測は、汎用ChatGPT/LLM環境をApplication Runtimeとして扱うには、従来のPrompt/Context議論では明示的に扱われてこなかったLayerが必要になる可能性を示している。
+日本語では、おおむね次の責務である。
 
-> Semantic OrchestrationとExact Executable Materializationの間を検証可能な形で橋渡しするLayer
+```text
+LLM
+= 意図解釈 / オーケストレーション / 説明
+
+コンテキスト
+= 行動制約 / 機能の意味 / 認可モデル
+
+決定論的スクリプト
+= 完全一致実行が重要な、再現可能なドメイン処理
+
+損失のない実体化層
+= 正本実行ファイルの認可と、ホスト提供サンドボックスの橋渡し
+```
+
+今回の観測は、汎用ChatGPT/LLM環境をアプリケーション実行環境として扱うには、従来のプロンプト/コンテキスト議論では明示的に扱われてこなかった層が必要になる可能性を示している。
+
+> 意味的なオーケストレーションと完全一致の実行ファイル実体化の間を、検証可能な形で橋渡しする層
 
 である。
 
 ---
 
-# 13. Conclusion
+# 13. 結論
 
-現時点のEvidenceは、5つのpreliminary findingを支持する。
+現時点の実証結果は、5つの予備的知見を支持する。
 
 ```text
-1. Semanticには十分な能力を持つLLM Hostでも、human-readable sourceの再現ではbyte-lossyになり得る。
+1. 意味的には十分な能力を持つLLMホストでも、人間可読ソースの再現ではバイト列を欠落させる場合がある。
 
-2. 特定のregistered implementationを実行する必要があるApplicationでは、functional equivalenceだけでは不十分である。
+2. 特定の登録済み実装を実行する必要があるアプリケーションでは、機能同等性だけでは不十分である。
 
-3. Lossless Representation + Deterministic Decodeにより、observed samplesではfresh LLM-host sessionを越えてcanonical executable bytesを完全一致で復元できた。
+3. 損失のない表現 + 決定論的復号により、観測した試料では新規LLMホストセッションを越えて正本実行ファイルのバイト列を完全一致で復元できた。
 
-4. Content-identity verificationは、MaterializationとAuthoritative Execution Eligibilityの間に明確なboundaryを提供する。
+4. 内容同一性検証は、実体化と正当な実行資格の間に明確な境界を提供する。
 
-5. Exact local bytesだけでは、reuse、cache semantics、filesystem replacement、executionを自動的にauthorizeしない。
+5. ローカルに完全一致バイト列が存在するだけでは、再利用、キャッシュ規則、ファイルシステム上の置換、実行を自動的には認可しない。
 ```
 
 したがって研究対象の中心はBase64やgzipそのものではない。
@@ -686,6 +731,6 @@ Executable Authority
 -> Deterministic Execution Evidence
 ```
 
-このChainは、**Context + deterministic Scripts + general-purpose ChatGPT/LLM host**を組み合わせてApplication-like Runtimeを成立させようとした過程から自然に生じた。
+この連鎖は、**コンテキスト + 決定論的スクリプト + 汎用ChatGPT/LLMホスト**を組み合わせてアプリケーションのような実行環境を成立させようとした過程から自然に生じた。
 
-Protocolはまだpreliminaryである。より強い主張には、dependency handling、USER_DATA separation、edge-case representation、scale、cross-host/model test、explicit cache semantics、continued negative controlsが必要である。
+プロトコルはまだ予備段階である。より強い主張には、依存関係処理、USER_DATA分離、境界ケースの表現、大規模化、ホスト/モデル間試験、明示的なキャッシュ規則、継続的な否定系制御が必要である。
