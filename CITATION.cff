@@ -8,6 +8,7 @@ authors:
 repository-code: "https://github.com/jumpesan/lossless-executable-materialization"
 url: "https://github.com/jumpesan/lossless-executable-materialization"
 version: "0.1-preliminary"
+license: "CC-BY-4.0"
 abstract: >-
   Preliminary research on verifiable lossless executable materialization across an
   LLM-host boundary, emerging from experiments that combine structured Context,
