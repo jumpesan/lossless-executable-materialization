@@ -30,8 +30,8 @@ This repository is intentionally being prepared while still private.
 - [ ] Verify all public links from a logged-out browser after visibility change
 - [x] Search public-preparation repository for known internal case/project names
 - [x] Confirm no private implementation case name is intentionally required for reproduction
-- [ ] Final secret/private-URL scan immediately before Public
-- [x] Confirm reports and README describe the same current evidence state
+- [x] Final repository-content review for known secret/token/email/private-case patterns
+- [x] Confirm reports, README, and experiment matrix describe the same current evidence state
 
 ## Evidence before stronger claims
 
@@ -49,9 +49,10 @@ The repository may be published as preliminary research before every item below 
 - [x] Unregistered near-identical executable control
 - [x] Explicit semantic-repair temptation control
 - [x] Domain-neutral synthetic fixture with independently recomputed fixed identities
-- [ ] Second independent executable black-box PASS
-- [ ] Multi-file dependency control
-- [ ] Filesystem/path containment controls
+- [x] Second independent registered executable black-box exact-materialization PASS
+- [x] Representative filesystem/path containment controls F0-F4
+- [x] F3 reasoning-pressure control: exact existing bytes do not imply cache/reuse authority
+- [ ] Multi-file dependency execution-unit black-box controls
 - [ ] USER_DATA separation controls
 - [ ] Unicode/newline-sensitive control
 - [ ] Larger payload/many-chunk control
@@ -121,6 +122,22 @@ report license = CC-BY-4.0
 ```
 
 Release date and DOI should be added when they exist.
+
+## Current release boundary
+
+Ready for first public visibility as **preliminary research / protocol candidate** after repository settings are confirmed.
+
+The following are intentionally *not* prerequisites for initial publication, but remain prerequisites for stronger claims:
+
+```text
+dependency execution-unit completion
+USER_DATA separation
+cross-host/model validation
+edge-case representation and scaling
+production filesystem hardening
+cache/reuse semantics
+final execution-handoff semantics
+```
 
 ## Release framing
 
