@@ -8,26 +8,37 @@
 
 ## English
 
-This repository focuses on one narrow problem:
+This repository focuses on a protocol candidate that emerged from real LLM-hosted application development:
 
 > How can an LLM-hosted runtime obtain the exact executable bytes that are authorized to run, prove that identity locally, and fail closed when exact materialization cannot be established?
 
-The problem appears when an LLM can identify which deterministic executable is required, while the execution environment does not automatically possess a trustworthy byte-exact copy of that executable.
+The problem appeared after the LLM could determine **which deterministic executable should run**, while the host-provided execution environment could not reliably obtain the exact registered executable bytes.
 
-The protocol candidate separates:
+A critical black-box counterexample then showed that human-readable source can preserve program meaning while losing byte identity:
+
+```text
+functional behavior = PASS
+all nonblank lines preserved = PASS
+33 blank lines removed
+SHA-256 / Git blob identity = FAIL
+```
+
+This changed the problem from source reconstruction to **lossless executable materialization**.
+
+### Protocol candidate
 
 ```text
 Executable Authority
 -> Lossless Representation
 -> Representation Acquisition
 -> Deterministic Assembly
--> Mechanical Materialization
+-> Mechanical Decode / Materialization
 -> Identity Proof
 -> Execution Eligibility
 -> Deterministic Execution Evidence
 ```
 
-Its core invariant is:
+The central invariant is:
 
 ```text
 semantic or functional equivalence
@@ -37,21 +48,50 @@ canonical executable identity
 
 A program that compiles, runs, and produces the expected result is still not treated as the authoritative executable when exact identity is required but unproven.
 
-### Scope
+### Current empirical evidence
 
-This repository is intentionally limited to the **Lossless Executable Materialization protocol candidate** and the evidence needed to evaluate it.
+Current evidence includes exact materialization across **two distinct registered single-file executables**.
 
-It does not attempt to publish or document the broader application architecture, product, domain implementation, or upstream research program from which the materialization problem was first encountered.
+For the primary sample:
 
-### Public evidence boundary
+```text
+plain chunked Base64 / GPT-5.6 Instant = EXACT PASS
+plain chunked Base64 / GPT-5.6 High    = EXACT PASS
+deterministic gzip + Base64 / GPT-5.6 Instant = EXACT PASS
+```
 
-The public reproduction package is self-contained.
+The deterministic gzip + Base64 profile reduced the tested transport representation from:
 
-All executable material and exact artifact identities intentionally published for reproduction are derived from the domain-neutral synthetic fixture included in this repository. No private source file, private repository path, private revision, or private artifact fingerprint is required for public reproduction.
+```text
+26076 characters / 7 chunks
+->
+5480 characters / 2 chunks
+```
 
-Earlier empirical observations are described only to the extent needed to motivate or evaluate the protocol boundary. The public fixture is the reference artifact for independent reproduction.
+or approximately **79% fewer transport characters** for that sample.
+
+A second registered executable also passed exact black-box materialization with GPT-5.6 Instant.
+
+Fail-closed controls for the current samples include:
+
+```text
+missing declared operands
+counterintuitive declared chunk order
+one-character payload corruption
+final canonical identity mismatch
+unregistered near-identical executable
+explicit semantic-repair temptation after terminal failure
+```
+
+Representative filesystem controls F0-F4 also passed. These cover clean isolated materialization, final-target symlink denial, ancestor/root-escape denial, pre-existing final-target denial, and failed staged-materialization cleanup. A reasoning-pressure run additionally confirmed that even a pre-existing file with exact canonical bytes was **not** silently upgraded into cache/reuse authority.
+
+Dependency execution-unit validation is the next active area and is **not yet counted as PASS**.
+
+These results are **sample-scoped preliminary evidence**, not a production guarantee or novelty proof.
 
 ### Public reference fixture
+
+The repository also includes a domain-neutral synthetic executable fixture so the materialization flow can be reproduced without depending on the application domain that originally exposed the problem.
 
 ```bash
 python fixtures/verify_reference_fixture.py
@@ -72,38 +112,39 @@ ordered operand acquisition
 
 See [fixtures/README.md](fixtures/README.md).
 
-### Current status
+### Scope
 
-```text
-protocol draft v0.1 = available
-public synthetic fixture = available
-public deterministic generator/verifier = available
-public prior-art scan = available
-independent LLM-host reproduction using the public fixture = open work
-cross-host / cross-vendor portability = open work
-production safety = not established
-novelty claim = not established
-```
+This repository intentionally focuses on the **Lossless Executable Materialization protocol candidate** and the evidence needed to evaluate it.
 
-Independent reproduction, counterexamples, closer prior art, and protocol-design criticism are welcome.
+It does not attempt to publish a broader AI-development methodology or unrelated upstream research program. The application domain in which the problem was first encountered is not required to understand or reproduce the protocol.
 
 ### AI assistance disclosure
 
-This research and repository were developed with **extensive use of AI assistants**, primarily through general-purpose ChatGPT/LLM environments. AI assistance has been used for architecture and protocol exploration, hypothesis generation and critique, experiment planning, drafting/refactoring code and documentation, analysis support, prior-art search support, editing, translation, and repository preparation.
+This research and repository were developed with **extensive use of AI assistants**, primarily through general-purpose ChatGPT/LLM environments. AI assistance has been used for protocol and architecture exploration, hypothesis generation and critique, experiment planning, drafting/refactoring code and documentation, analysis support, prior-art search support, editing, translation, and repository preparation.
 
-AI also appears separately as part of the runtime class being studied. These roles are kept distinct.
+AI also appears separately as part of the experimental runtime/host being studied. These two roles should not be conflated.
 
-AI-generated text, code, or interpretation is **not treated as experimental evidence by itself**. Public claims are intended to remain grounded in inspectable artifacts, machine-checkable identities, reproducible execution results, negative controls, and cited public sources.
+AI-generated text, code, or interpretation is **not treated as experimental evidence by itself**. Claims are intended to remain grounded in inspectable artifacts, cryptographic identities, machine execution results, structured outputs, negative controls, and black-box observations. Human responsibility for research direction, evidence acceptance, interpretation, and publication remains explicit.
 
 See [AI_ASSISTANCE.md](AI_ASSISTANCE.md).
 
 ### What is not claimed as new
 
-This project does **not** claim invention of Base64, gzip, hashing, chunking, manifests, content addressing, reproducible execution, or software-supply-chain verification.
+This project does **not** claim invention of Base64, gzip, hashing, chunking, manifests, content addressing, reproducible execution, or software-supply-chain verification. Strong prior art exists in OCI, TUF, SRI, Nix, BitTorrent/IPFS/IPLD, MCP resources, Agent Skills, in-toto/SLSA/Sigstore, and adjacent execution-integrity work.
 
-The research question is whether mature primitives can be composed into a useful protocol layer for an LLM-host boundary where exact executable identity must remain authoritative despite host/sandbox acquisition differences or representation normalization.
+The research question is whether those mature primitives form a useful protocol layer for an LLM-host boundary where:
+
+```text
+host-visible representations may be normalized or transformed
++
+execution environments may have different acquisition capabilities
++
+exact registered executable identity is still required before authoritative execution
+```
 
 ### Licensing
+
+This repository uses split licensing:
 
 ```text
 documentation / reports / prose specifications / research notes
@@ -144,6 +185,7 @@ AI_ASSISTANCE.md
 CONTRIBUTING.md
 SECURITY.md
 ROADMAP.md
+PUBLICATION_CHECKLIST.md
 CITATION.cff
 LICENSE
 LICENSES/
@@ -155,29 +197,42 @@ Read more:
 - [Preliminary Technical Report — English](reports/preliminary-report.en.md)
 - [予備技術レポート — 日本語](reports/preliminary-report.ja.md)
 - [Protocol Draft v0.1](spec/protocol-draft-v0.1.md)
-- [Experiment / Reproduction Guide](experiments/README.md)
+- [Experiment Matrix](experiments/README.md)
 - [Public Reference Fixture](fixtures/README.md)
+- [AI Assistance Disclosure](AI_ASSISTANCE.md)
 - [Prior-Art Scan](research/prior-art.md)
 - [Research Roadmap](ROADMAP.md)
+
+Independent reproduction, counterexamples, closer prior art, cross-model/host tests, and protocol-design criticism are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ---
 
 ## 日本語
 
-このRepositoryは、**Lossless Executable Materializationという1つのProtocol Candidate**に対象を絞った公開研究Repositoryです。
+このRepositoryは、実際のLLM-hosted Application開発中に発生した **Lossless Executable Materialization** という1つのProtocol Candidateを扱う公開研究Repositoryです。
 
 扱う問いは次です。
 
-> LLM Hostが必要なdeterministic executableを識別できても、Execution Environmentにその正確なbytesが存在するとは限らない。では、authorizedなExecutableをlosslessにmaterializeし、local identityを証明してからだけ実行資格を与えるにはどうすればよいか。
+> LLMが「どのdeterministic executableを実行すべきか」を判断できても、Execution Environmentにその登録済みExecutableの正確なbytesが存在するとは限らない。では、そのExecutableをlosslessにmaterializeし、local identityを証明してからだけ実行資格を与えるにはどうすればよいか。
 
-Protocol Candidateでは次の責務を分離します。
+初期のblack-box testでは、人間可読なPython Sourceを再構成した際、非空行はすべて一致し、compile / execution / structured resultもPASSした一方で、33行の空行が失われ、SHA-256 / Git blob identityが一致しない反例が得られました。
+
+```text
+意味・機能が同じ
+!=
+正本Executableと同一
+```
+
+この結果から、Source Reconstructionではなく **Lossless Executable Materialization** をProtocolとして扱う方向へ進みました。
+
+### Protocol Candidate
 
 ```text
 Executable Authority
 -> Lossless Representation
 -> Representation Acquisition
 -> Deterministic Assembly
--> Mechanical Materialization
+-> Mechanical Decode / Materialization
 -> Identity Proof
 -> Execution Eligibility
 -> Deterministic Execution Evidence
@@ -191,21 +246,41 @@ semantic / functional equivalence
 canonical executable identity
 ```
 
-compileできる、動く、期待した結果が出る、というだけでは、Exact Identityが要求されるExecutableのauthorityを満たしたことにはしません。
+### 現在の実証Evidence
 
-### 公開範囲
+現在は、**2つの異なるregistered single-file executable**でexact materializationを確認しています。
 
-このRepositoryでは、**Materialization Protocolそのものと、その評価に必要なEvidenceだけ**を扱います。
+Primary sampleでは:
 
-この問題が最初に発生した上位Application Architecture、Domain Implementation、Product、上流の研究体系全体を公開・解説することは目的にしません。
+```text
+plain chunked Base64 / GPT-5.6 Instant = EXACT PASS
+plain chunked Base64 / GPT-5.6 High    = EXACT PASS
+deterministic gzip + Base64 / GPT-5.6 Instant = EXACT PASS
+```
 
-### 公開Evidenceの境界
+deterministic gzip + Base64 profileでは、同一sampleのtransport representationを
 
-第三者向けの再現Artifactは、このRepository内の**domain-neutral synthetic fixture**だけで完結させます。
+```text
+26076文字 / 7 chunk
+->
+5480文字 / 2 chunk
+```
 
-公開再現のために、private source、private repository path、private revision、private artifact fingerprintは必要ありません。初期のempirical observationについては、Protocol境界を説明・評価するために必要な範囲だけを一般化して扱います。
+へ削減し、約79%のtransport文字削減を確認しました。
+
+さらにsecond registered executableでもGPT-5.6 Instantのblack-box exact materializationがPASSしています。
+
+Fail-closed controlでは、missing operand、宣言順序の逆転、1文字corruption、final identity mismatch、未登録の近似Executable、terminal failure後のsemantic-repair temptationを検証しています。
+
+Filesystemについても代表的なF0-F4がPASSしており、symlink/root escape、pre-existing final target、失敗後のstaging residueをdenyできています。また、既存targetがcanonical bytesと完全一致していても、それを勝手にcache/reuse authorityへ昇格しないことをreasoning-pressure testで確認しています。
+
+Dependency execution-unit validationは次の検証対象であり、**まだPASSには数えていません**。
+
+これらはsample-scopedなpreliminary evidenceであり、Production Safetyや一般的新規性を主張するものではありません。
 
 ### Public Reference Fixture
+
+Application Domainに依存せず第三者がMaterialization Flowを確認できるように、domain-neutralなsynthetic executable fixtureも同梱しています。
 
 ```bash
 python fixtures/verify_reference_fixture.py
@@ -226,28 +301,19 @@ ordered operand acquisition
 
 詳細は [fixtures/README.md](fixtures/README.md) を参照してください。
 
-### 現在のStatus
+### 公開範囲
 
-```text
-protocol draft v0.1 = available
-public synthetic fixture = available
-public deterministic generator/verifier = available
-public prior-art scan = available
-public fixtureを使ったindependent LLM-host reproduction = 今後の検証
-cross-host / cross-vendor portability = 今後の検証
-production safety = 未確立
-novelty claim = 未確立
-```
+このRepositoryでは、**Lossless Executable Materialization Protocolそのものと、その評価に必要なEvidence**に対象を絞ります。
 
-再現結果、反例、より近いPrior Art、Protocol設計上の批判を歓迎します。
+より広いAI開発方法論や、今回のProtocolと直接関係しない上流研究体系を公開・解説することは目的にしません。問題が最初に発生したApplication Domainを知らなくても、このProtocolは理解・再現できる構成にします。
 
 ### AI利用の開示
 
 本研究およびRepository作成では、**AI Assistantを積極的かつ広範囲に使用しています**。Protocol/Architecture検討、仮説生成と反論、実験計画、code/documentのdraft・refactor、分析支援、prior-art探索支援、編集、翻訳、Repository整備などに利用しています。
 
-一方、AI/LLMは研究支援とは別に、研究対象となるRuntime classの一部としても登場します。この2つの役割は区別します。
+またAI/LLMは、研究支援とは別に、実験対象となるRuntime/Hostの一部としても登場します。この2つの役割は区別します。
 
-AI生成の文章・code・解釈そのものは、単独ではExperimental Evidenceとして扱いません。公開上の主張は、inspect可能なArtifact、machine-checkable identity、reproducible execution result、negative control、公開Sourceへ結び付けます。
+AI生成の文章・code・解釈そのものは、単独ではExperimental Evidenceとして扱いません。主張は、Artifact、cryptographic identity、machine execution result、structured output、negative control、black-box observationなど検証可能なEvidenceへ結び付けます。研究方向、Evidenceの採否、解釈、公開内容についてはHuman Researcherが責任を持ちます。
 
 詳細は [AI_ASSISTANCE.md](AI_ASSISTANCE.md) を参照してください。
 
@@ -267,7 +333,7 @@ Executable Fixture / Generated Materialization Artifact
 - [日本語 予備技術レポート](reports/preliminary-report.ja.md)
 - [English Preliminary Technical Report](reports/preliminary-report.en.md)
 - [Protocol Draft v0.1](spec/protocol-draft-v0.1.md)
-- [Experiment / Reproduction Guide](experiments/README.md)
+- [Experiment Matrix](experiments/README.md)
 - [Public Reference Fixture](fixtures/README.md)
 - [Prior-Art Scan](research/prior-art.md)
 - [Research Roadmap](ROADMAP.md)
