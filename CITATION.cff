@@ -8,6 +8,7 @@ authors:
 repository-code: "https://github.com/jumpesan/lossless-executable-materialization"
 url: "https://github.com/jumpesan/lossless-executable-materialization"
 version: "0.1-preliminary"
+date-released: 2026-08-18
 license: "CC-BY-4.0"
 abstract: >-
   Preliminary research on a protocol candidate for losslessly materializing an
