@@ -63,7 +63,7 @@ def build_source() -> bytes:
             "    if not isinstance(payload, dict):",
             "        return {",
             '            "status": "invalid",',
-            "            \"fixture_version\": FIXTURE_VERSION,",
+            '            "fixture_version": FIXTURE_VERSION,',
             '            "reasons": ["payload_must_be_object"],',
             "        }",
             "",
