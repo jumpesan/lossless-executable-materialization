@@ -4,8 +4,8 @@ This research has been conducted with **extensive use of AI assistants**, primar
 
 AI assistance is not incidental to this project. It has been used as part of the research and engineering workflow for activities including:
 
-- architecture exploration and hypothesis generation;
-- critique and refinement of proposed responsibility and trust boundaries;
+- protocol/architecture exploration and hypothesis generation;
+- critique and refinement of responsibility, authority, and trust boundaries;
 - experiment planning and black-box test design;
 - drafting and refactoring code, descriptors, scripts, and documentation;
 - analyzing experimental outputs and comparing competing explanations;
@@ -21,9 +21,9 @@ AI-generated text, code, interpretation, or confidence is **not treated as exper
 Claims in this repository are intended to be grounded in inspectable or reproducible evidence such as:
 
 ```text
-canonical artifact identities
+public canonical artifact identities
 cryptographic hashes
-Git blob identities
+Git blob identities where applicable
 published representation units
 machine decode/materialization results
 compile and execution results
@@ -49,10 +49,10 @@ AI systems are not listed as authors or accountable researchers.
 - deciding what claims are published;
 - correcting errors in this repository.
 
-## Why this is disclosed
+## Scope of this disclosure
 
-The broader research question itself concerns software architectures in which Context, deterministic Scripts, and general-purpose LLM hosts interact closely. Hiding the degree of AI involvement in the research process would make the methodology less transparent.
+This disclosure applies to the work published in this repository: the **Lossless Executable Materialization protocol candidate**, its public fixtures, experiments, and documentation.
 
-This disclosure is therefore intentionally explicit: **AI was used heavily both as a research/engineering assistant and, in controlled experiments, as part of the system being studied.**
+It should not be read as a description of any broader research program, application implementation, or upstream project.
 
-The distinction between those roles should be preserved when interpreting results.
+The disclosure is intentionally explicit because AI was used heavily both as a research/engineering assistant and, in controlled experiments, as part of the runtime class being studied. The distinction between those roles should be preserved when interpreting results.
