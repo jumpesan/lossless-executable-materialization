@@ -1,0 +1,54 @@
+{
+  "schema": "lem-materialization-descriptor",
+  "schema_version": "0.1-draft",
+  "status": "illustrative-only",
+  "authority": {
+    "executable_id": "example-validator",
+    "canonical_revision": "example-immutable-revision",
+    "canonical_locator": "https://example.invalid/canonical/example-validator.py"
+  },
+  "representation": {
+    "profile": "deterministic-gzip-v1+base64",
+    "representation_revision": "example-representation-revision",
+    "assembly": "ordered_ascii_concatenation",
+    "transport_encoding": "base64",
+    "compression": {
+      "algorithm": "gzip",
+      "level": 9,
+      "mtime": 0
+    },
+    "operands": [
+      {
+        "order": 1,
+        "locator": "https://example.invalid/representation/part-001.b64",
+        "expected_characters": 4096
+      },
+      {
+        "order": 2,
+        "locator": "https://example.invalid/representation/part-002.b64",
+        "expected_characters": 1384
+      }
+    ],
+    "compressed_identity": {
+      "size_bytes": 4108,
+      "sha256": "1f261bde093a478a3f4c3d93e044df03152175186d70370b7fa917fdb3a15b9b"
+    }
+  },
+  "canonical_identity": {
+    "size_bytes": 19555,
+    "sha256": "9edabcca4016dda30e0d79a522d994f2f5c26375915f1a9814b52263f2ab99c4",
+    "git_blob_sha1": "7aa3327f9351156fa617a613554819c2a6879d08"
+  },
+  "execution": {
+    "interface": "python-script",
+    "requires_identity_pass": true,
+    "structured_result_required": true
+  },
+  "failure": {
+    "terminal_on_missing_operand": true,
+    "terminal_on_representation_identity_mismatch": true,
+    "terminal_on_canonical_identity_mismatch": true,
+    "semantic_repair_allowed": false,
+    "alternate_representation_after_terminal_failure_allowed": false
+  }
+}
