@@ -116,7 +116,7 @@ See [fixtures/README.md](fixtures/README.md).
 
 This repository intentionally focuses on the **Lossless Executable Materialization protocol candidate** and the evidence needed to evaluate it.
 
-It does not attempt to publish a broader AI-development methodology or unrelated upstream research program. The application domain in which the problem was first encountered is not required to understand or reproduce the protocol.
+It does not attempt to publish the broader application architecture or domain implementation from which the problem was first encountered. The application domain is not required to understand or reproduce the protocol.
 
 ### AI assistance disclosure
 
@@ -305,7 +305,7 @@ ordered operand acquisition
 
 このRepositoryでは、**Lossless Executable Materialization Protocolそのものと、その評価に必要なEvidence**に対象を絞ります。
 
-より広いAI開発方法論や、今回のProtocolと直接関係しない上流研究体系を公開・解説することは目的にしません。問題が最初に発生したApplication Domainを知らなくても、このProtocolは理解・再現できる構成にします。
+問題が最初に発生したApplication全体のArchitectureやDomain実装を公開・解説することは目的にしません。Application Domainを知らなくても、このProtocolは理解・再現できる構成にします。
 
 ### AI利用の開示
 
