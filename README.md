@@ -46,9 +46,11 @@ Executable Authority
 -> Deterministic Execution Evidence
 ```
 
-The current experiments have demonstrated exact recovery for one executable using both plain chunked Base64 and deterministic gzip + Base64. GPT-5.6 Instant and High both produced exact plain-Base64 materializations in fresh Temporary Chats. A deterministic gzip + Base64 profile also produced an exact Instant materialization while reducing the tested transport representation from 26,076 characters / 7 chunks to 5,480 characters / 2 chunks (~79% fewer transport characters).
+Current evidence includes exact materialization across **two distinct registered single-file executables**. The primary sample passed plain chunked Base64 in fresh GPT-5.6 Instant and High Temporary Chats, and deterministic gzip + Base64 in a fresh GPT-5.6 Instant Temporary Chat. The gzip profile reduced the tested representation from 26,076 characters / 7 chunks to 5,480 characters / 2 chunks (~79% fewer transport characters). A second registered executable also passed exact black-box materialization with GPT-5.6 Instant.
 
-Several fail-closed controls have also passed for the current sample, including missing operands, counterintuitive declared chunk order, one-character payload corruption, final identity mismatch, unregistered near-identical executable identity, and explicit semantic-repair temptation after terminal failure.
+Fail-closed evidence for the current samples includes missing operands, counterintuitive declared chunk order, one-character payload corruption, final identity mismatch, unregistered near-identical executable identity, and explicit semantic-repair temptation after terminal failure. Representative filesystem controls F0-F4 also pass, including denial of symlink/root-escape paths, pre-existing final targets, and failed staged materialization residue. A reasoning-pressure run confirmed that even a pre-existing target with exact canonical bytes was **not** silently upgraded into a cache hit or execution authority.
+
+Dependency execution-unit validation is the next active control and is **not yet counted as PASS**.
 
 These results are **sample-scoped preliminary evidence**, not a production guarantee or novelty proof.
 
@@ -195,9 +197,13 @@ We welcome reproduction results, counterexamples, prior art, cross-model/host te
 
 そこで、SourceをLLMに再生成させるのではなく、losslessなRepresentationをHost越しに取得し、Sandbox内でmechanicalにdecode/materializeし、Canonical Identityを証明してから実行資格を与える方式へ研究対象を変更しました。
 
-現在は、plain chunked Base64でGPT-5.6 Instant / Highのfresh Temporary Chat exact PASS、さらにdeterministic gzip + Base64でInstant exact PASSを観測しています。gzip profileでは同一19,555-byte executableに対し、26,076文字 / 7 chunkから5,480文字 / 2 chunkへ約79%のtransport文字削減も確認しています。
+現在は、**2つの異なるregistered single-file executable**でexact materializationを確認しています。Primary sampleではplain chunked Base64がGPT-5.6 Instant / Highのfresh Temporary Chatでexact PASS、deterministic gzip + Base64がGPT-5.6 Instantでexact PASSしています。gzip profileでは26,076文字 / 7 chunkから5,480文字 / 2 chunkへ約79%のtransport文字削減を確認しました。さらにsecond registered executableでもGPT-5.6 Instantのblack-box exact materializationがPASSしています。
 
-加えて、missing operand、宣言順序の逆転、1文字corruption、final identity mismatch、未登録の近似Executable、失敗後に正解のrepair候補を明示的に見せるsemantic temptationなど、複数のfail-closed controlが現在のsampleでPASSしています。
+Fail-closed controlでは、missing operand、宣言順序の逆転、1文字corruption、final identity mismatch、未登録の近似Executable、terminal failure後のsemantic-repair temptationがPASSしています。Filesystemについても代表的なF0-F4がPASSし、symlink/root escape、pre-existing final target、失敗後のstaging residueをdenyできています。さらに、既存targetがcanonical bytesと完全一致していても、それを勝手にcache hitやexecution authorityへ昇格しないことをreasoning-pressure testで確認しています。
+
+Dependency execution-unit validationは現在の次の検証対象であり、**まだPASSには数えていません**。
+
+これらはまだsample-scopedなpreliminary evidenceであり、Production Safetyや一般的新規性を主張するものではありません。
 
 ### 公開用Reference Fixture
 
