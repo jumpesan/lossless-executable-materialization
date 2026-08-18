@@ -1,0 +1,48 @@
+name: Prior art / existing system
+description: Share an existing protocol, paper, package system, runtime, or specification that overlaps with this work.
+title: "[Prior Art] "
+body:
+  - type: input
+    id: name
+    attributes:
+      label: Existing system / paper / specification
+    validations:
+      required: true
+
+  - type: input
+    id: link
+    attributes:
+      label: Primary reference
+      description: Prefer an official specification, paper, RFC, or primary repository/documentation.
+    validations:
+      required: true
+
+  - type: textarea
+    id: overlap
+    attributes:
+      label: Which responsibilities overlap?
+      description: Compare authority, representation, transport, assembly, identity proof, execution gate, semantic-repair behavior, and LLM-host boundary where relevant.
+    validations:
+      required: true
+
+  - type: textarea
+    id: difference
+    attributes:
+      label: Important differences
+      description: Explain where the existing system does not match, or if you believe it fully subsumes the candidate.
+    validations:
+      required: true
+
+  - type: textarea
+    id: implication
+    attributes:
+      label: Implication for the current novelty/architecture claim
+      description: Does this narrow the candidate contribution, suggest reuse of an existing standard, or show a direct equivalent?
+
+  - type: checkboxes
+    id: primary
+    attributes:
+      label: Source quality
+      options:
+        - label: I have linked a primary source where one is available.
+          required: true
