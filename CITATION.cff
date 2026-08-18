@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+message: "If you use this research, please cite the technical report and the repository release used in your work."
+title: "Lossless Executable Materialization Across an LLM Host Boundary"
+type: report
+authors:
+  - family-names: "Fujii"
+    given-names: "Jumpei"
+repository-code: "https://github.com/jumpesan/lossless-executable-materialization"
+url: "https://github.com/jumpesan/lossless-executable-materialization"
+version: "0.1-preliminary"
+abstract: >-
+  Preliminary research on verifiable lossless executable materialization across an
+  LLM-host boundary, emerging from experiments that combine structured Context,
+  deterministic Scripts, and a general-purpose ChatGPT/LLM host as an
+  application-like runtime.
+keywords:
+  - LLM
+  - AI agents
+  - artifact integrity
+  - executable materialization
+  - content identity
+  - sandbox
+  - reproducibility
+  - software supply chain
