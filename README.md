@@ -2,6 +2,8 @@
 
 > Preliminary research on verifiable executable materialization across an LLM-host boundary.
 
+**Author:** Jumpei Fujii (GitHub: [@jumpesan](https://github.com/jumpesan))
+
 [日本語](#日本語) · [English](#english)
 
 ## English
@@ -118,7 +120,7 @@ CONTRIBUTING.md
 SECURITY.md
 ROADMAP.md
 PUBLICATION_CHECKLIST.md
-CITATION.cff.template
+CITATION.cff
 ```
 
 ### Status
