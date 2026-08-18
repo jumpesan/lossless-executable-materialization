@@ -26,7 +26,7 @@ semantic equivalence
 authoritative executable identity
 ```
 
-The protocol MUST provide a path from an externally established executable authority to an exact local materialization whose identity can be proven before execution is treated as authoritative.
+The protocol MUST provide a path from an externally established executable authority to an exact local materialization whose identity and required materialization preconditions can be proven before execution is treated as authoritative.
 
 Target flow:
 
@@ -38,6 +38,7 @@ Executable Authority
 -> Mechanical Decode / Decompression
 -> Candidate Materialization
 -> Identity Proof
+-> Filesystem / Materialization Preconditions
 -> Execution Eligibility
 -> Deterministic Execution
 -> Structured Evidence
@@ -65,21 +66,25 @@ A Representation is transport material only.
 
 ## 2.4 Representation Descriptor
 
-Machine-readable metadata declaring the representation profile, ordered operands, expected representation identities, expected final artifact identity, and protocol version.
+Machine-readable metadata declaring the representation profile, ordered operands, expected representation identities, expected final artifact identity, protocol version, and relevant materialization/execution-unit policy.
 
 ## 2.5 Candidate Materialization
 
-The local bytes recovered by the execution environment before the final identity gate passes.
+The local bytes recovered by the execution environment before all final gates pass.
 
 ## 2.6 Identity Proof
 
 Evidence that the recovered candidate equals the Canonical Executable. The current research uses byte length, SHA-256, and Git blob identity when Git-backed.
 
-## 2.7 Execution Eligibility
+## 2.7 Materialization Preconditions
 
-A protocol state reached only after all required authority, representation, transformation, and canonical-identity gates pass.
+Machine-checkable conditions that govern where and how recovered bytes may become a final local artifact. Examples include root containment, symlink denial, final-target existence policy, staging cleanup, and execution-unit completeness.
 
-## 2.8 Execution Evidence
+## 2.8 Execution Eligibility
+
+A protocol state reached only after all required authority, representation, transformation, canonical-identity, filesystem/materialization, and execution-unit gates pass.
+
+## 2.9 Execution Evidence
 
 Machine-checkable evidence returned after deterministic execution, such as exit status, structured output, validator status, and optionally stderr/stdout constraints.
 
@@ -98,6 +103,8 @@ Transport
 !=
 Materialized Copy
 !=
+Filesystem / Cache State
+!=
 Execution Evidence
 ```
 
@@ -111,6 +118,10 @@ representation is authorized
 local file exists
 !=
 local file is trusted
+
+local file bytes equal canonical bytes
+!=
+cache/reuse authorization
 
 compile PASS
 !=
@@ -144,6 +155,10 @@ CANDIDATE_MATERIALIZED
   ↓
 CANONICAL_IDENTITY_VERIFIED
   ↓
+MATERIALIZATION_PRECONDITIONS_VERIFIED
+  ↓
+EXECUTION_UNIT_VERIFIED       # where applicable
+  ↓
 EXECUTION_ELIGIBLE
   ↓
 EXECUTED
@@ -153,7 +168,7 @@ RESULT_VALIDATED
 
 Any required gate failure MUST transition the current attempt to a terminal failure state.
 
-A terminal failure MUST NOT be upgraded by semantic repair, alternate source substitution, functionally equivalent code generation, or a second undeclared materialization attempt.
+A terminal failure MUST NOT be upgraded by semantic repair, alternate source substitution, functionally equivalent code generation, implicit cache reuse, filesystem replacement, or a second undeclared materialization attempt.
 
 ---
 
@@ -178,6 +193,10 @@ expected_intermediate_digest
 expected_final_size
 expected_final_digest
 expected_git_blob_when_applicable
+materialization_root_policy
+final_target_policy
+staging_policy
+execution_unit_members where applicable
 execution_interface
 structured_output_contract
 failure_semantics
@@ -211,7 +230,7 @@ invent a missing operand
 sort operands by filename when descriptor order differs
 replace an operand with a known-good alternative
 fetch a different representation after a terminal failure
-repair non-whitespace corruption semantically
+repair corruption semantically
 ```
 
 Transport-introduced ASCII whitespace MAY be normalized only if the active Representation Profile explicitly permits it.
@@ -261,7 +280,7 @@ acquire chunks
 -> Base64 decode exactly once
 -> verify compressed identity
 -> gzip decompress exactly once
--> write decompressed bytes directly
+-> write decompressed bytes as candidate bytes
 -> verify canonical executable identity
 ```
 
@@ -285,7 +304,84 @@ A final identity mismatch MUST be terminal for the current attempt.
 
 ---
 
-# 11. Execution Eligibility
+# 11. Filesystem / Materialization Preconditions
+
+Exact canonical bytes do not by themselves authorize a filesystem action.
+
+The current v0.1 baseline requires a controlled materialization root and treats unsafe or ambiguous final-target state as a denial condition.
+
+Representative rules supported by current experiments:
+
+```text
+final target is symlink
+-> DENY
+
+ancestor path escapes or resolves outside authorized root
+-> DENY
+
+fresh attempt + final target already exists
+-> DENY
+
+staged candidate fails identity
+-> no final target created
+-> no staging residue retained
+```
+
+The intentionally conservative v0.1 baseline is:
+
+```text
+fresh attempt + existing final target -> DENY
+```
+
+Even if the existing file's bytes exactly equal the Canonical Executable, the implementation MUST NOT infer cache/reuse authority unless an explicit cache/reuse policy separately authorizes that state.
+
+```text
+canonical local byte equality
+!=
+cache/reuse authorization
+```
+
+The implementation MUST NOT delete, overwrite, replace, or execute an existing final target merely because doing so appears semantically useful.
+
+Production hardening still requires explicit treatment of concurrency, TOCTOU, cleanup taint, and cross-platform filesystem behavior.
+
+---
+
+# 12. Execution-Unit Semantics
+
+A deterministic capability may require more than one executable file.
+
+Where the execution unit contains executable dependencies, every executable member MUST independently satisfy:
+
+```text
+authority
++ representation resolution
++ representation integrity
++ canonical identity
++ filesystem/materialization preconditions
+```
+
+A dependency MUST NOT inherit executable authority merely because an authorized entrypoint imports or references it.
+
+Draft execution-unit rule:
+
+```text
+entrypoint authority + identity PASS
+AND every executable dependency authority + identity PASS
+AND declared dependency/import binding PASS
+-> EXECUTION_UNIT_ELIGIBLE
+
+any required executable-member failure
+-> entire execution unit DENY
+```
+
+A DATA dependency MUST remain data unless separately granted executable authority.
+
+This section is normative-candidate text informed by current design work. The prepared multi-file black-box controls are not yet counted as completed protocol evidence.
+
+---
+
+# 13. Execution Eligibility
 
 Execution Eligibility is granted only when all required gates pass.
 
@@ -296,7 +392,8 @@ operand acquisition = PASS
 representation integrity = PASS
 transformation = PASS
 canonical executable identity = PASS
-filesystem / execution-unit policy = PASS where applicable
+filesystem/materialization preconditions = PASS
+execution-unit completeness = PASS where applicable
 -> EXECUTION_ELIGIBLE
 ```
 
@@ -304,7 +401,7 @@ A candidate artifact that has not reached `EXECUTION_ELIGIBLE` MUST NOT be prese
 
 ---
 
-# 12. Execution and Structured Evidence
+# 14. Execution and Structured Evidence
 
 Execution SHOULD use a registered execution interface and produce machine-checkable result evidence.
 
@@ -324,7 +421,7 @@ The LLM may explain or interpret structured output after deterministic execution
 
 ---
 
-# 13. Fail-Closed Requirements
+# 15. Fail-Closed Requirements
 
 The current research treats the following as terminal or reject conditions:
 
@@ -337,13 +434,17 @@ compressed identity mismatch
 final executable identity mismatch
 unregistered executable identity
 semantic repair temptation after terminal failure
+unsafe filesystem target/path state
+pre-existing final target in a fresh attempt
+failed staged identity
+missing or unauthorized executable dependency where applicable
 ```
 
 The implementation MUST NOT use LLM reasoning to override a failed machine gate.
 
 ---
 
-# 14. Semantic Repair Prohibition
+# 16. Semantic Repair / Convenience Override Prohibition
 
 A defining requirement of this candidate is:
 
@@ -353,7 +454,15 @@ failed exact materialization
 permission to create equivalent code
 ```
 
-After a terminal identity/authority failure, the LLM MUST NOT:
+The same principle applies to other convenience shortcuts:
+
+```text
+existing exact bytes
+!=
+permission to treat them as an authorized cache hit
+```
+
+After a terminal authority/identity/materialization failure, the LLM MUST NOT:
 
 ```text
 open an undeclared known-good source as repair input
@@ -362,13 +471,15 @@ infer a corrupted character from source semantics
 rewrite a functionally equivalent implementation
 start a new undeclared attempt
 compile or execute a repaired substitute as canonical
+overwrite/delete/replace an existing target to force progress
+reuse an existing exact-byte file without explicit cache/reuse authority
 ```
 
-A separately authorized retry policy may exist in a future protocol, but it MUST be explicit and MUST create a new attempt with its own declared operands and identity gates.
+A separately authorized retry or cache policy may exist in a future protocol, but it MUST be explicit and MUST preserve independent authority and identity gates.
 
 ---
 
-# 15. First Representation Profile Candidate
+# 17. First Representation Profile Candidate
 
 ## deterministic-gzip-v1+base64
 
@@ -398,43 +509,59 @@ A fresh GPT-5.6 Instant Temporary Chat recovered the canonical bytes exactly wit
 
 ---
 
-# 16. Validation Coverage at Draft v0.1
+# 18. Validation Coverage at Draft v0.1
 
-Observed for the primary sample:
+Current observed evidence:
 
 ```text
-positive plain Base64 exact materialization: Instant PASS
-positive plain Base64 exact materialization: High PASS
-positive deterministic gzip+Base64: Instant PASS
+Primary executable
+  plain Base64 exact materialization: Instant PASS
+  plain Base64 exact materialization: High PASS
+  deterministic gzip+Base64 exact materialization: Instant PASS
 
-N1 missing chunk: PASS
-N2 declared wrong/counterintuitive order: Instant+High PASS
-N3 one-character payload corruption: PASS
-N5 final executable identity mismatch: Instant+High PASS
-N6 unregistered near-identical executable: Instant+High PASS
-N7 explicit semantic-repair temptation: Instant+High PASS
+Second registered executable
+  exact black-box materialization: Instant PASS
+  canonical identity: PASS
+  compile: PASS
+
+N-controls
+  N1 missing chunk: PASS
+  N2 declared counterintuitive order: Instant+High PASS
+  N3 one-character payload corruption: PASS
+  N5 final executable identity mismatch: Instant+High PASS
+  N6 unregistered near-identical executable: Instant+High PASS
+  N7 explicit semantic-repair temptation: Instant+High PASS
+
+Filesystem controls
+  F0 clean isolated root: PASS
+  F1 final target symlink: PASS / DENY
+  F2 ancestor/root escape: PASS / DENY
+  F3 pre-existing final target: PASS / DENY
+  F4 failed staged identity residue: PASS / DENY
+  F3 exact-byte reuse reasoning pressure: Instant+High PASS / DENY
 ```
+
+N4 dedicated gzip corruption remains intentionally skipped because N3 already proves the compressed-identity gate before decompression.
 
 Not yet sufficient for production integration.
 
 Pending areas include:
 
 ```text
-second independent executable completion
-filesystem path containment
-multi-file dependency authority
+multi-file dependency execution-unit black-box completion
 USER_DATA separation
 Unicode/newline edge cases
 large payload scaling
 duplicate operand / stale revision controls
-cache/reuse semantics
+explicit cache/reuse semantics
 execution handoff
+filesystem concurrency / TOCTOU / cross-platform hardening
 cross-host / cross-vendor portability
 ```
 
 ---
 
-# 17. Security Model Notes
+# 19. Security Model Notes
 
 This draft assumes the following broad rule:
 
@@ -449,7 +576,7 @@ Future work may bind the descriptor to signed metadata, OCI/TUF-like artifact id
 
 ---
 
-# 18. Non-Goals
+# 20. Non-Goals
 
 Draft v0.1 does not attempt to standardize:
 
@@ -469,7 +596,7 @@ These may interact with the protocol but are separate concerns.
 
 ---
 
-# 19. Open Questions
+# 21. Open Questions
 
 Important questions before a stronger protocol claim:
 
@@ -479,15 +606,16 @@ Should descriptors reuse OCI/TUF concepts directly?
 What is the correct multi-file execution-unit model?
 How should per-file and aggregate identities compose?
 What normalization, if any, is safe at the transport boundary?
-How should cache entries be reverified?
+How should cache entries be explicitly authorized and reverified?
 How should explicit retries be authorized?
 How large can host-visible representations become reliably?
+How should concurrency and TOCTOU be handled across host sandboxes?
 Can the protocol survive different LLM vendors and host retrieval surfaces?
 ```
 
 ---
 
-# 20. Draft Rule
+# 22. Draft Rule
 
 Until stronger evidence exists:
 
@@ -503,4 +631,8 @@ universal guarantee
 functionally equivalent
 !=
 canonical executable
+
+canonical local bytes
+!=
+implicit reuse authority
 ```
