@@ -60,6 +60,16 @@ python fixtures/verify_reference_fixture.py
 
 The published fixture independently exercises ordered chunk acquisition, strict decode, compressed identity, decompression, final canonical identity, compile, deterministic execution, and structured output. Its artifact identities are fixed and self-checked by the generator. See [fixtures/README.md](fixtures/README.md).
 
+### AI assistance disclosure
+
+This research and repository were developed with **extensive use of AI assistants**, primarily through general-purpose ChatGPT/LLM environments. AI assistance has been used for architecture exploration, hypothesis generation and critique, experiment planning, drafting/refactoring code and documentation, analysis support, prior-art search support, editing, translation, and repository preparation.
+
+AI also appears separately as part of the experimental runtime/host being studied. These two roles should not be conflated.
+
+AI-generated text, code, or interpretation is **not treated as experimental evidence by itself**. Claims are intended to remain grounded in inspectable artifacts, cryptographic identities, machine execution results, structured outputs, negative controls, and black-box observations. Human responsibility for research direction, evidence acceptance, interpretation, and publication remains explicit.
+
+See [AI_ASSISTANCE.md](AI_ASSISTANCE.md) for the full disclosure.
+
 ### What is not claimed as new
 
 This project does **not** claim invention of Base64, gzip, hashing, chunking, manifests, content addressing, reproducible execution, or software-supply-chain verification. Strong prior art exists in OCI, TUF, SRI, Nix, BitTorrent/IPFS/IPLD, MCP resources, Agent Skills, in-toto/SLSA/Sigstore, and adjacent execution-integrity work.
@@ -103,6 +113,7 @@ research/
   prior-art.yml
   protocol-feedback.yml
 
+AI_ASSISTANCE.md
 CONTRIBUTING.md
 SECURITY.md
 ROADMAP.md
@@ -132,6 +143,7 @@ Protocol and research artifacts:
 - [Draft Failure Codes](spec/failure-codes.md)
 - [Experiment Matrix](experiments/README.md)
 - [Public Reference Fixture](fixtures/README.md)
+- [AI Assistance Disclosure](AI_ASSISTANCE.md)
 - [Prior-Art Scan](research/prior-art.md)
 - [Research Roadmap](ROADMAP.md)
 
@@ -177,6 +189,16 @@ python fixtures/verify_reference_fixture.py
 
 このFixtureは、ordered chunk acquisition、strict decode、compressed identity、decompression、final canonical identity、compile、deterministic execution、structured outputまでRepository単体で検証できます。詳細は [fixtures/README.md](fixtures/README.md) を参照してください。
 
+### AI利用の開示
+
+この研究およびRepositoryの作成では、**AI Assistantを積極的かつ広範囲に使用しています**。主に汎用ChatGPT/LLM環境を用い、Architecture検討、仮説生成と反論、実験計画、code/documentのdraft・refactor、実験結果の分析支援、prior-art探索支援、編集、翻訳、公開Repository整備などに利用しています。
+
+またAI/LLMは、研究支援とは別に、実験対象となるRuntime/Hostの一部としても登場します。この2つの役割は区別して扱います。
+
+AIが生成した文章・code・解釈そのものは、**単独ではExperimental Evidenceとして扱いません**。主張は、Artifact、cryptographic identity、machine execution result、structured output、negative control、black-box observationなど検証可能なEvidenceへ結び付けます。研究方向、Evidenceの採否、解釈、公開内容についてはHuman Researcherが責任を持ちます。
+
+詳細は [AI_ASSISTANCE.md](AI_ASSISTANCE.md) に明記しています。
+
 ただし、これはまだ**Protocol Candidate**です。Production Safetyや一般的新規性を主張する段階ではありません。
 
 - [日本語 予備技術レポート](reports/preliminary-report.ja.md)
@@ -184,6 +206,7 @@ python fixtures/verify_reference_fixture.py
 - [Protocol Draft v0.1](spec/protocol-draft-v0.1.md)
 - [Experiment Matrix](experiments/README.md)
 - [Public Reference Fixture](fixtures/README.md)
+- [AI利用の開示](AI_ASSISTANCE.md)
 - [Prior-Art Scan](research/prior-art.md)
 - [Research Roadmap](ROADMAP.md)
 
