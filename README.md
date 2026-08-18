@@ -86,6 +86,21 @@ execution sandbox may not share host retrieval capability
 exact registered executable identity is still required
 ```
 
+### Licensing
+
+This repository uses split licensing so research knowledge and executable material can both be reused under licenses suited to their role:
+
+```text
+documentation / reports / prose specifications / research notes
+-> CC BY 4.0
+
+source code / scripts / CI / machine-readable examples /
+executable fixtures / generated materialization artifacts
+-> Apache-2.0
+```
+
+See [LICENSE](LICENSE) for the exact scope and [LICENSES/](LICENSES/) for the license notices/text.
+
 ### Repository layout
 
 ```text
@@ -121,6 +136,9 @@ SECURITY.md
 ROADMAP.md
 PUBLICATION_CHECKLIST.md
 CITATION.cff
+LICENSE
+LICENSES/
+NOTICE
 ```
 
 ### Status
@@ -200,6 +218,21 @@ python fixtures/verify_reference_fixture.py
 AIが生成した文章・code・解釈そのものは、**単独ではExperimental Evidenceとして扱いません**。主張は、Artifact、cryptographic identity、machine execution result、structured output、negative control、black-box observationなど検証可能なEvidenceへ結び付けます。研究方向、Evidenceの採否、解釈、公開内容についてはHuman Researcherが責任を持ちます。
 
 詳細は [AI_ASSISTANCE.md](AI_ASSISTANCE.md) に明記しています。
+
+### ライセンス
+
+本Repositoryは用途に合わせたsplit licensingを採用しています。
+
+```text
+研究文書 / Technical Report / 文章によるSpecification / Research Note
+-> CC BY 4.0
+
+Source Code / Script / CI / Machine-readable Example /
+Executable Fixture / Generated Materialization Artifact
+-> Apache-2.0
+```
+
+適用範囲の詳細は [LICENSE](LICENSE)、各Licenseの表記・本文は [LICENSES/](LICENSES/) を参照してください。
 
 ただし、これはまだ**Protocol Candidate**です。Production Safetyや一般的新規性を主張する段階ではありません。
 
