@@ -22,10 +22,11 @@ This repository is intentionally being prepared while still private.
 - [x] SECURITY.md
 - [x] Issue / PR contribution templates
 - [x] Research roadmap
-- [ ] Final author name
-- [ ] Final affiliation wording
+- [x] Final author name — Jumpei Fujii
+- [x] Affiliation wording — omitted; individual research
 - [ ] Final public license
-- [ ] Final CITATION.cff
+- [x] CITATION.cff author/repository metadata
+- [ ] Add release date/DOI to CITATION.cff when available
 - [ ] Verify all public links from a logged-out browser after visibility change
 - [x] Search public-preparation repository for known internal case/project names
 - [x] Confirm no private implementation case name is intentionally required for reproduction
@@ -101,19 +102,15 @@ This is a decision item, not a recommendation already accepted.
 
 ## Citation
 
-`CITATION.cff` should be created only after the public author name is finalized.
-
-Suggested title:
+`CITATION.cff` now records:
 
 ```text
-Lossless Executable Materialization Across an LLM Host Boundary
+author = Jumpei Fujii
+version = 0.1-preliminary
+repository = jumpesan/lossless-executable-materialization
 ```
 
-Suggested initial version label:
-
-```text
-0.1-preliminary
-```
+Release date and DOI should be added when they exist.
 
 ## Release framing
 
