@@ -185,7 +185,7 @@ AI_ASSISTANCE.md
 CONTRIBUTING.md
 SECURITY.md
 ROADMAP.md
-PUBLICATION_CHECKLIST.md
+RELEASE_NOTES.md
 CITATION.cff
 LICENSE
 LICENSES/
@@ -202,6 +202,7 @@ Read more:
 - [AI Assistance Disclosure](AI_ASSISTANCE.md)
 - [Prior-Art Scan](research/prior-art.md)
 - [Research Roadmap](ROADMAP.md)
+- [v0.1-preliminary Release Notes](RELEASE_NOTES.md)
 
 Independent reproduction, counterexamples, closer prior art, cross-model/host tests, and protocol-design criticism are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
@@ -337,3 +338,4 @@ Executable Fixture / Generated Materialization Artifact
 - [Public Reference Fixture](fixtures/README.md)
 - [Prior-Art Scan](research/prior-art.md)
 - [Research Roadmap](ROADMAP.md)
+- [v0.1-preliminary Release Notes](RELEASE_NOTES.md)
