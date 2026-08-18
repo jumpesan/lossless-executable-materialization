@@ -1,0 +1,45 @@
+name: Protocol feedback
+description: Propose a protocol change, point out an underspecified state/gate, or challenge an invariant.
+title: "[Protocol] "
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or ambiguity
+      description: Which part of the protocol draft is unsafe, unclear, incomplete, or unnecessarily strict?
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence or motivating scenario
+      description: Prefer an observed run, concrete counterexample, primary specification, or executable scenario.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+      description: Describe the state-machine, descriptor, gate, failure, or terminology change you recommend.
+    validations:
+      required: true
+
+  - type: textarea
+    id: invariant
+    attributes:
+      label: Effect on core invariants
+      description: Explain how the proposal affects authority, representation, materialization, identity proof, execution eligibility, or fail-closed behavior.
+
+  - type: dropdown
+    id: normative
+    attributes:
+      label: Suggested requirement level
+      options:
+        - Discussion only
+        - MUST
+        - SHOULD
+        - MAY
+    validations:
+      required: true
