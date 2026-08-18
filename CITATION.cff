@@ -10,10 +10,10 @@ url: "https://github.com/jumpesan/lossless-executable-materialization"
 version: "0.1-preliminary"
 license: "CC-BY-4.0"
 abstract: >-
-  Preliminary research on verifiable lossless executable materialization across an
-  LLM-host boundary, emerging from experiments that combine structured Context,
-  deterministic Scripts, and a general-purpose ChatGPT/LLM host as an
-  application-like runtime.
+  Preliminary research on a protocol candidate for losslessly materializing an
+  authorized executable across an LLM-host boundary, verifying canonical content
+  identity locally, and granting execution eligibility only after required
+  authority and identity gates pass.
 keywords:
   - LLM
   - AI agents
