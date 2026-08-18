@@ -50,6 +50,16 @@ Several fail-closed controls have also passed for the current sample, including 
 
 These results are **sample-scoped preliminary evidence**, not a production guarantee or novelty proof.
 
+### Public reference fixture
+
+To make the repository reproducible without access to the private implementation project that originally exposed the problem, this repository includes a **domain-neutral synthetic executable fixture** with a deterministic gzip + Base64 representation, descriptor, generator, and verifier.
+
+```bash
+python fixtures/verify_reference_fixture.py
+```
+
+The published fixture independently exercises ordered chunk acquisition, strict decode, compressed identity, decompression, final canonical identity, compile, deterministic execution, and structured output. Its artifact identities are fixed and self-checked by the generator. See [fixtures/README.md](fixtures/README.md).
+
 ### What is not claimed as new
 
 This project does **not** claim invention of Base64, gzip, hashing, chunking, manifests, content addressing, reproducible execution, or software-supply-chain verification. Strong prior art exists in OCI, TUF, SRI, Nix, BitTorrent/IPFS/IPLD, MCP resources, Agent Skills, in-toto/SLSA/Sigstore, and adjacent execution-integrity work.
@@ -78,6 +88,12 @@ spec/
 
 experiments/
   README.md
+
+fixtures/
+  README.md
+  generate_reference_fixture.py
+  verify_reference_fixture.py
+  representation/
 
 research/
   prior-art.md
@@ -115,6 +131,7 @@ Protocol and research artifacts:
 - [Illustrative Descriptor](spec/descriptor-example.json)
 - [Draft Failure Codes](spec/failure-codes.md)
 - [Experiment Matrix](experiments/README.md)
+- [Public Reference Fixture](fixtures/README.md)
 - [Prior-Art Scan](research/prior-art.md)
 - [Research Roadmap](ROADMAP.md)
 
@@ -150,12 +167,23 @@ We welcome reproduction results, counterexamples, prior art, cross-model/host te
 
 加えて、missing operand、宣言順序の逆転、1文字corruption、final identity mismatch、未登録の近似Executable、失敗後に正解のrepair候補を明示的に見せるsemantic temptationなど、複数のfail-closed controlが現在のsampleでPASSしています。
 
+### 公開用Reference Fixture
+
+元の非公開実装Projectを知らなくても第三者がMaterialization手順を確認できるように、domain-neutralなsynthetic executable fixtureを同梱しています。
+
+```bash
+python fixtures/verify_reference_fixture.py
+```
+
+このFixtureは、ordered chunk acquisition、strict decode、compressed identity、decompression、final canonical identity、compile、deterministic execution、structured outputまでRepository単体で検証できます。詳細は [fixtures/README.md](fixtures/README.md) を参照してください。
+
 ただし、これはまだ**Protocol Candidate**です。Production Safetyや一般的新規性を主張する段階ではありません。
 
 - [日本語 予備技術レポート](reports/preliminary-report.ja.md)
 - [English Preliminary Technical Report](reports/preliminary-report.en.md)
 - [Protocol Draft v0.1](spec/protocol-draft-v0.1.md)
 - [Experiment Matrix](experiments/README.md)
+- [Public Reference Fixture](fixtures/README.md)
 - [Prior-Art Scan](research/prior-art.md)
 - [Research Roadmap](ROADMAP.md)
 
