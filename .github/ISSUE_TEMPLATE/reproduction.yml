@@ -1,0 +1,88 @@
+name: Reproduction result
+description: Report an independent positive, negative, or divergent materialization result.
+title: "[Reproduction] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for testing the protocol candidate. Failures and counterexamples are as valuable as successful reproductions.
+
+  - type: input
+    id: host
+    attributes:
+      label: Host / product
+      placeholder: e.g. ChatGPT Temporary Chat
+    validations:
+      required: true
+
+  - type: input
+    id: model
+    attributes:
+      label: Model and reasoning mode
+      placeholder: e.g. GPT-5.6 Instant
+    validations:
+      required: true
+
+  - type: textarea
+    id: isolation
+    attributes:
+      label: Session isolation and available tools
+      description: Describe fresh chat/project state, connectors, Web access, sandbox/network capability, or other relevant host features.
+    validations:
+      required: true
+
+  - type: input
+    id: profile
+    attributes:
+      label: Representation profile
+      placeholder: e.g. deterministic-gzip-v1+base64
+    validations:
+      required: true
+
+  - type: textarea
+    id: identity
+    attributes:
+      label: Materialized identity
+      description: Report byte size, SHA-256, Git blob/content identifier when applicable.
+      render: text
+    validations:
+      required: true
+
+  - type: textarea
+    id: execution
+    attributes:
+      label: Compile / execution / structured result
+      render: text
+    validations:
+      required: true
+
+  - type: dropdown
+    id: semantic_repair
+    attributes:
+      label: Was semantic repair or source rewriting used?
+      options:
+        - "No"
+        - "Yes"
+        - "Unknown"
+    validations:
+      required: true
+
+  - type: textarea
+    id: gate
+    attributes:
+      label: First failing gate, if any
+      description: If the run failed, identify the first protocol gate that failed and whether the attempt stopped there.
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Additional observations
+      description: Include timing only as observational data unless the test controlled performance variables.
+
+  - type: checkboxes
+    id: evidence
+    attributes:
+      label: Evidence discipline
+      options:
+        - label: I have distinguished directly observed results from inference or hypothesis.
+          required: true
