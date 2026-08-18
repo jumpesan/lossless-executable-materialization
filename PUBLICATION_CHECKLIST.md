@@ -8,18 +8,27 @@ This repository is intentionally being prepared while still private.
 - [x] English preliminary technical report
 - [x] Japanese preliminary technical report
 - [x] Protocol Draft v0.1
+- [x] Illustrative descriptor and failure-code draft
 - [x] Experiment matrix / reproduction guidance
 - [x] Broad prior-art scan
+- [x] Domain-neutral public reference fixture
+- [x] Deterministic fixture generator with fixed identity self-check
+- [x] Published fixture representation + descriptor
+- [x] Local fixture verifier
+- [x] Fixture CI workflow definition
 - [x] CONTRIBUTING.md
 - [x] SECURITY.md
+- [x] Issue / PR contribution templates
+- [x] Research roadmap
 - [ ] Final author name
 - [ ] Final affiliation wording
 - [ ] Final public license
 - [ ] Final CITATION.cff
-- [ ] Verify all public links from a logged-out browser
-- [ ] Remove/replace any internal-only references
-- [ ] Confirm no private repository names, tokens, secrets, private URLs, or user data are present
-- [ ] Confirm reports and README describe the same current evidence state
+- [ ] Verify all public links from a logged-out browser after visibility change
+- [x] Search public-preparation repository for known internal case/project names
+- [x] Confirm no private implementation case name is intentionally required for reproduction
+- [ ] Final secret/private-URL scan immediately before Public
+- [x] Confirm reports and README describe the same current evidence state
 
 ## Evidence before stronger claims
 
@@ -36,6 +45,7 @@ The repository may be published as preliminary research before every item below 
 - [x] Final source-identity mismatch control
 - [x] Unregistered near-identical executable control
 - [x] Explicit semantic-repair temptation control
+- [x] Domain-neutral synthetic fixture with independently recomputed fixed identities
 - [ ] Second independent executable black-box PASS
 - [ ] Multi-file dependency control
 - [ ] Filesystem/path containment controls
