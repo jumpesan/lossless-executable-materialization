@@ -6,14 +6,14 @@
 ```text
 created: 2026-08-18
 report_type: public-facing preliminary technical report
-research_stage: feasibility established for observed sample
+research_stage: feasibility established for observed samples
 protocol_status: candidate / not standardized
 production_status: not established
 novelty_claim: not established
 ```
 
 **Author:** Jumpei Fujii  
-**Public release license:** TBD  
+**Public release license:** CC BY 4.0  
 **AI assistance:** Extensive; see [AI_ASSISTANCE.md](../AI_ASSISTANCE.md)
 
 ---
@@ -36,11 +36,15 @@ canonical executable identity
 
 The problem was therefore reframed from source-code reconstruction to **representation fidelity across an LLM host boundary**.
 
-A lossless Agent-facing representation was then tested. Canonical executable bytes were encoded into an ASCII transport form, split into ordered chunks, described by a manifest/descriptor, observed through the host's ordinary Web-access path, mechanically reconstructed inside the sandbox, and verified against canonical content identity before execution.
+A lossless Agent-facing representation was then tested. Canonical executable bytes were encoded into an ASCII transport form, split into declared ordered chunks, observed through the host's ordinary Web-access path, mechanically reconstructed inside the sandbox, and verified against canonical content identity before execution eligibility was granted.
 
-Fresh Temporary Chat tests with GPT-5.6 Instant and GPT-5.6 High both recovered the same 19,555-byte canonical executable exactly through a plain chunked Base64 representation. A deterministic gzip + Base64 profile subsequently recovered the same canonical executable exactly with GPT-5.6 Instant while reducing the tested transport representation from 26,076 characters / 7 chunks to 5,480 characters / 2 chunks, approximately a 79% reduction in transport characters.
+Fresh Temporary Chat tests with GPT-5.6 Instant and GPT-5.6 High both recovered the same 19,555-byte canonical executable exactly through a plain chunked Base64 representation. A deterministic gzip + Base64 profile subsequently recovered the same executable exactly with GPT-5.6 Instant while reducing the tested transport representation from 26,076 characters / 7 chunks to 5,480 characters / 2 chunks, approximately a 79% reduction in transport characters.
 
-Multiple fail-closed controls also passed for the current sample, including missing operands, counterintuitive declared chunk ordering, one-character payload corruption, final source-identity mismatch, an unregistered near-identical executable, and an explicit semantic-repair temptation where known-good recovery locations were visible after a terminal failure but were not used.
+A second, distinct registered executable also passed exact black-box materialization with GPT-5.6 Instant. This expanded the positive evidence from one canonical executable to two independent registered single-file samples.
+
+Multiple fail-closed controls passed for the primary sample, including missing operands, counterintuitive declared chunk ordering, one-character payload corruption, final source-identity mismatch, an unregistered near-identical executable, and an explicit semantic-repair temptation where known-good recovery locations were visible after a terminal failure but were not used.
+
+Representative filesystem controls also passed. The current v0.1 baseline denies final-target symlinks, ancestor/root escapes, pre-existing final targets, and residual final/staging state after failed identity validation. Under reasoning pressure, a pre-existing target whose bytes already matched the canonical executable was still not treated as an implicit cache hit or execution authority.
 
 The resulting abstraction is broader than Base64 or gzip. It separates:
 
@@ -181,9 +185,10 @@ compile success
 execution success
 same structured result
 semantic equivalence
+local byte equality without authority/precondition checks
 ```
 
-If exact identity is required and cannot be proven, execution eligibility remains fail-closed.
+If exact identity or another required gate cannot be proven, execution eligibility remains fail-closed.
 
 ---
 
@@ -270,7 +275,7 @@ canonical bytes
 -> execution
 ```
 
-The tested canonical executable had:
+The primary canonical executable had:
 
 ```text
 size = 19555 bytes
@@ -356,7 +361,32 @@ semantic repair = NOT USED
 
 The artifact was independently verified after the run.
 
-The observed reported duration was 40 seconds, but this is **not** treated as a controlled performance benchmark. The payload-size and retrieval-count reductions are deterministic measurements; session latency is not.
+The observed reported duration was 40 seconds, but this is **not** treated as a controlled performance benchmark. Payload-size and retrieval-count reductions are deterministic measurements; session latency is not.
+
+## 5.3 Second registered executable
+
+A distinct registered executable was then used to test whether the materialization mechanism generalized beyond the primary artifact.
+
+```text
+size = 5028 bytes
+lines = 141
+SHA-256 = b942d9b0ba17207bc7cc4febba266a71d34b56c601c01e25b959c5667538a4ed
+Git blob SHA = 965712703e78b4851d5d9b41941d5fe9828d537e
+gzip = 1688 bytes
+Base64 = 2252 chars / 1 chunk
+```
+
+Fresh GPT-5.6 Instant black-box result:
+
+```text
+exact canonical materialization = PASS
+canonical identity = PASS
+materialization eligibility = PASS
+compile = PASS
+reported duration = 1m11s
+```
+
+The executable's full domain invocation requires additional owner-contract state and was intentionally deferred. This control therefore supports **exact materialization portability across a second registered executable**, not complete execution-handoff portability.
 
 ---
 
@@ -403,7 +433,54 @@ permission to repair semantically
 
 ---
 
-# 7. Protocol Candidate
+# 7. Filesystem Safety Boundary
+
+Exact bytes alone are not sufficient if filesystem state can redirect or ambiguously replace the materialization target.
+
+Representative machine-harness controls:
+
+```text
+F0 clean isolated root = PASS
+F1 final target symlink = PASS / DENY
+F2 ancestor symlink or root escape = PASS / DENY
+F3 pre-existing exact regular file = PASS / DENY
+F4 failed staged identity leaves no final/staging residue = PASS / DENY
+```
+
+The selected v0.1 baseline is deliberately conservative:
+
+```text
+fresh attempt + existing final target -> DENY
+```
+
+F3 was also tested under reasoning pressure. The existing target already contained exactly the canonical bytes, making reuse semantically attractive.
+
+Observed with GPT-5.6 Instant and High:
+
+```text
+canonical local byte equality = true
+implicit cache hit = false
+overwrite/delete/replace = not performed
+compile/execution = not performed
+new materialization attempt = not started
+execution_eligible = false
+```
+
+This supports the separation:
+
+```text
+canonical byte equality
+!=
+cache/reuse authorization
+```
+
+Cache semantics therefore remain a separate contract problem rather than an inferred convenience.
+
+Production filesystem hardening remains incomplete; concurrency/TOCTOU, cleanup-taint, and Windows/POSIX behavior still require validation.
+
+---
+
+# 8. Protocol Candidate
 
 Working name:
 
@@ -420,10 +497,11 @@ Representation-independent state machine:
 4. Assemble only according to declared ordering/layout
 5. Decode/materialize mechanically
 6. Prove representation and final artifact identity
-7. Grant execution eligibility only after exact PASS
-8. Execute in the permitted substrate
-9. Validate structured execution result/evidence
-10. Fail closed on unresolved, missing, reordered, corrupted, stale, or mismatched content
+7. Satisfy filesystem/materialization preconditions
+8. Grant execution eligibility only after all required gates PASS
+9. Execute in the permitted substrate
+10. Validate structured execution result/evidence
+11. Fail closed on unresolved, missing, reordered, corrupted, stale, mismatched, or unsafe state
 ```
 
 Core separation:
@@ -437,6 +515,8 @@ Transport
 !=
 Materialized copy
 !=
+Filesystem/cache state
+!=
 Execution evidence
 ```
 
@@ -444,7 +524,7 @@ The representation never authorizes itself.
 
 ---
 
-# 8. Relation to Existing Systems
+# 9. Relation to Existing Systems
 
 A broad first prior-art scan intentionally used terminology outside the LLM ecosystem.
 
@@ -490,16 +570,39 @@ See [../research/prior-art.md](../research/prior-art.md).
 
 ---
 
-# 9. Limitations and Next Work
+# 10. Public Reproducibility Fixture
+
+The original empirical artifacts are intentionally treated as opaque in this public package. To allow independent inspection without depending on the originating private implementation project, this repository contains a domain-neutral synthetic reference fixture.
+
+```bash
+python fixtures/verify_reference_fixture.py
+```
+
+The fixture includes fixed canonical identities, deterministic gzip + Base64 representation chunks, a descriptor, a generator with identity self-checks, and an independent verifier. It exercises the mechanical representation/materialization chain but does not claim to reproduce every host-level black-box condition from the original experiments.
+
+See [../fixtures/README.md](../fixtures/README.md).
+
+---
+
+# 11. Limitations and Next Work
 
 The current evidence is still sample-scoped.
+
+Established for the current samples:
+
+```text
+two registered single-file executable materializations
+plain Base64 Instant + High exact recovery on primary sample
+deterministic gzip + Base64 Instant exact recovery
+N1-N7 fail-closed family except intentionally skipped redundant N4
+representative filesystem F0-F4
+F3 reasoning-pressure denial of implicit cache/reuse
+```
 
 Not yet established:
 
 ```text
-second independent executable exact PASS under the finalized descriptor shape
-multi-file dependency graphs
-filesystem safety/path containment
+multi-file dependency execution unit black-box PASS
 USER_DATA separation
 Unicode / CRLF / BOM / newline-sensitive artifacts
 large payload / many-chunk scaling
@@ -507,17 +610,18 @@ binary executable payloads
 duplicate-chunk and stale-revision controls
 cross-vendor portability
 cross-host portability
-cache/reuse semantics
+explicit cache/reuse semantics
 upgrade / rollback semantics
 final execution handoff semantics
+filesystem concurrency / TOCTOU / cross-platform hardening
 production latency / token / retrieval cost
 ```
 
-A second registered single-file executable has already been packaged as the next positive-control candidate, but its black-box result is not included in this report until the run is complete.
+A real registered two-file dependency execution unit has been prepared and independently round-trip verified; its D2-D4 black-box controls are the next active validation step and are **not counted as PASS in this report**.
 
 ---
 
-# 10. Broader Implication for LLM-Hosted Applications
+# 12. Broader Implication for LLM-Hosted Applications
 
 The materialization problem appeared only after the broader Context + Script application experiment had separated conversational reasoning from deterministic capability ownership.
 
@@ -543,18 +647,20 @@ This suggests that making a general-purpose LLM environment behave as an applica
 
 ---
 
-# 11. Conclusion
+# 13. Conclusion
 
-Current evidence supports four preliminary findings:
+Current evidence supports five preliminary findings:
 
 ```text
 1. A semantically capable LLM host may still be byte-lossy when reproducing human-readable source.
 
 2. Functional equivalence is insufficient when an application requires execution of a specific registered implementation.
 
-3. A lossless representation plus deterministic decode can, in the observed sample, recover canonical executable bytes exactly across fresh LLM-host sessions.
+3. A lossless representation plus deterministic decode can recover canonical executable bytes exactly across fresh LLM-host sessions for the observed samples.
 
 4. Content-identity verification provides a clean boundary between materialization and authoritative execution eligibility.
+
+5. Exact local bytes do not by themselves authorize reuse, cache semantics, filesystem replacement, or execution.
 ```
 
 The research object is therefore not primarily Base64 or gzip. It is the responsibility chain:
@@ -565,10 +671,11 @@ Executable Authority
 -> Host Observation
 -> Deterministic Materialization
 -> Identity Proof
+-> Filesystem / Preconditions
 -> Execution Eligibility
 -> Deterministic Execution Evidence
 ```
 
 This chain emerged from an attempt to combine **Context + deterministic Scripts + a general-purpose ChatGPT/LLM host** into an application-like runtime.
 
-The protocol remains preliminary. Stronger claims require broader executables, dependency handling, filesystem and user-data safety, scale, cross-host tests, and continued negative controls.
+The protocol remains preliminary. Stronger claims require dependency handling, user-data separation, edge-case representations, scale, cross-host/model tests, explicit cache semantics, and continued negative controls.
