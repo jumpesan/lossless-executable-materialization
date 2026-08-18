@@ -24,8 +24,8 @@ This repository is intentionally being prepared while still private.
 - [x] Research roadmap
 - [x] Final author name — Jumpei Fujii
 - [x] Affiliation wording — omitted; individual research
-- [ ] Final public license
-- [x] CITATION.cff author/repository metadata
+- [x] Final public license — split licensing: CC BY 4.0 for documentation/research; Apache-2.0 for software/machine-readable executable-materialization artifacts
+- [x] CITATION.cff author/repository/license metadata
 - [ ] Add release date/DOI to CITATION.cff when available
 - [ ] Verify all public links from a logged-out browser after visibility change
 - [x] Search public-preparation repository for known internal case/project names
@@ -86,19 +86,28 @@ research
 
 ## Licensing decision
 
-Do not add a repository-wide license accidentally before deciding whether code/spec/docs should share one license.
-
-Possible split to evaluate:
+Accepted split-license model:
 
 ```text
-documentation / technical report / specification
--> CC BY 4.0 or similar documentation-friendly license
+documentation / technical reports / prose specifications / research notes
+-> CC BY 4.0
 
-reference implementation / scripts
--> Apache-2.0 or MIT
+source code / scripts / CI / machine-readable protocol examples /
+executable fixtures / generated materialization artifacts
+-> Apache-2.0
 ```
 
-This is a decision item, not a recommendation already accepted.
+Rationale:
+
+```text
+CC BY 4.0
+-> encourages citation, redistribution, translation, and adaptation of research knowledge
+
+Apache-2.0
+-> software-specific permissive reuse with explicit copyright/patent terms
+```
+
+The root `LICENSE` defines path/type scope. Canonical license notices/text are under `LICENSES/`.
 
 ## Citation
 
@@ -108,6 +117,7 @@ This is a decision item, not a recommendation already accepted.
 author = Jumpei Fujii
 version = 0.1-preliminary
 repository = jumpesan/lossless-executable-materialization
+report license = CC-BY-4.0
 ```
 
 Release date and DOI should be added when they exist.
