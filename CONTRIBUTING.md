@@ -79,6 +79,8 @@ compressed identity mismatch
 final executable identity mismatch
 unregistered executable
 explicit repair temptation after terminal failure
+unsafe filesystem target/path state
+implicit cache/reuse temptation
 ```
 
 Please do not "fix" a negative-control payload during the same attempt and then report the repaired execution as a protocol pass.
@@ -95,6 +97,8 @@ representation
 transport
 assembly
 identity proof
+filesystem/materialization preconditions
+execution-unit semantics
 execution gate
 semantic-repair behavior
 LLM-host boundary
@@ -116,6 +120,27 @@ Protocol language should use:
 
 Until the protocol matures, normative wording may still change.
 
-## License
+## Contribution licensing
 
-The public license has not yet been finalized during repository preparation. Do not assume a license grant beyond GitHub's normal ability to view this private preparation repository. The license will be chosen before public release.
+This repository uses split licensing. By intentionally submitting a contribution for inclusion in this repository, you agree that the contribution may be distributed under the license that applies to its destination file/path unless you clearly state otherwise before acceptance.
+
+Default contribution licensing follows the root [LICENSE](LICENSE):
+
+```text
+documentation / reports / prose specifications / research notes
+-> CC BY 4.0
+
+source code / scripts / CI / machine-readable protocol examples /
+executable fixtures / generated materialization artifacts
+-> Apache-2.0
+```
+
+If a file contains an explicit file-level license or SPDX notice, that notice takes precedence.
+
+Do not submit third-party material unless you have the right to do so and its license/attribution requirements are clearly identified.
+
+## AI-assisted contributions
+
+AI-assisted drafting or coding is allowed. Contributors remain responsible for what they submit, including correctness, licensing, provenance, and any claims made about experimental evidence.
+
+AI-generated interpretation alone is not sufficient evidence for a protocol claim. Reproduction or experimental claims should include inspectable run/artifact evidence where possible.
