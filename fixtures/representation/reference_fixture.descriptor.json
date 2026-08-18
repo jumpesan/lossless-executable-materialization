@@ -1,0 +1,66 @@
+{
+  "schema": "lem-materialization-descriptor",
+  "schema_version": "0.1-draft",
+  "fixture_id": "lem-reference-fixture-v0.1",
+  "status": "public-reference-fixture",
+  "authority": {
+    "role": "PUBLIC_REFERENCE_FIXTURE",
+    "canonical_generator": "fixtures/generate_reference_fixture.py",
+    "generated_canonical_path": "fixtures/canonical/reference_fixture.py"
+  },
+  "representation": {
+    "profile": "deterministic-gzip-v1+base64",
+    "assembly": "ordered_ascii_concatenation",
+    "transport_encoding": "base64",
+    "compression": {
+      "algorithm": "gzip",
+      "level": 9,
+      "mtime": 0
+    },
+    "operands": [
+      {
+        "order": 1,
+        "path": "fixtures/representation/reference_fixture.gzip-base64.part-001.b64",
+        "characters": 4096,
+        "sha256": "a96d044f6c520fcc6eb8ca2c5bfba62ac4feebeb41dd2ba3556332aeeeb7ce7a"
+      },
+      {
+        "order": 2,
+        "path": "fixtures/representation/reference_fixture.gzip-base64.part-002.b64",
+        "characters": 4096,
+        "sha256": "b3ffc9e36ffec2ce6520a36c91a07638c7f46511d162b390ca712f012729e16e"
+      },
+      {
+        "order": 3,
+        "path": "fixtures/representation/reference_fixture.gzip-base64.part-003.b64",
+        "characters": 236,
+        "sha256": "dc2bb0307e80e974dd227e67e67cceeee3f6571438ec471927f5ff96be5f5d94"
+      }
+    ],
+    "assembled_characters": 8428,
+    "compressed_identity": {
+      "size_bytes": 6321,
+      "sha256": "ec5839b3636ef7d5d03b362f781c676c0812f96e80d138b4e358dba32376da08"
+    }
+  },
+  "canonical_identity": {
+    "size_bytes": 12123,
+    "sha256": "31594021147f13e6d824cc61c083d3fdd674bf79ee5eda590d5a4b7fe6b1123d",
+    "git_blob_sha1": "8fcd8da1dbbb09e1cea2c565a7abc27d7363ff7a"
+  },
+  "execution": {
+    "interface": "python-script-stdin-json",
+    "sample_input": {
+      "mode": "alpha",
+      "values": [1, 2, 3],
+      "expected_total": 6,
+      "vector_index": 7
+    },
+    "expected_exit_code": 0,
+    "expected_status": "valid"
+  },
+  "failure": {
+    "semantic_repair_allowed": false,
+    "alternate_representation_after_terminal_failure_allowed": false
+  }
+}
