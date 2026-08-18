@@ -22,6 +22,7 @@ This repository is intentionally being prepared while still private.
 - [x] SECURITY.md
 - [x] Issue / PR contribution templates
 - [x] Research roadmap
+- [x] v0.1-preliminary release notes draft
 - [x] Final author name — Jumpei Fujii
 - [x] Affiliation wording — omitted; individual research
 - [x] Final public license — split licensing: CC BY 4.0 for documentation/research; Apache-2.0 for software/machine-readable executable-materialization artifacts
@@ -31,7 +32,7 @@ This repository is intentionally being prepared while still private.
 - [x] Search public-preparation repository for known internal case/project names
 - [x] Confirm no private implementation case name is intentionally required for reproduction
 - [x] Final repository-content review for known secret/token/email/private-case patterns
-- [x] Confirm reports, README, and experiment matrix describe the same current evidence state
+- [x] Confirm reports, README, protocol draft, and experiment matrix describe the same current evidence state
 
 ## Evidence before stronger claims
 
@@ -61,12 +62,16 @@ The repository may be published as preliminary research before every item below 
 
 ## Repository settings before Public
 
-- [ ] Confirm visibility is intentionally changed from Private to Public
-- [ ] Enable Issues
-- [ ] Enable Discussions if community design discussion is desired
-- [ ] Enable Dependabot/security features that are available
-- [ ] Confirm branch protection/default branch policy
-- [ ] Confirm merge strategy
+Current settings already confirmed through repository metadata:
+
+- [x] Issues enabled
+- [x] Default branch = `main`
+- [x] Branch policy reviewed — currently unprotected intentionally during active rapid research; revisit after initial release
+- [x] Merge strategy reviewed — squash / merge commit / rebase currently available; not a release blocker
+- [ ] Change visibility from Private to Public
+- [ ] Enable Discussions for open-ended community design discussion
+- [ ] Enable Private Vulnerability Reporting after repository becomes Public
+- [ ] Enable available Dependabot / security-analysis features
 - [ ] Add repository topics
 - [ ] Add website/DOI later if applicable
 
@@ -123,9 +128,15 @@ report license = CC-BY-4.0
 
 Release date and DOI should be added when they exist.
 
+## Privacy note
+
+The repository files do not intentionally include the originating private implementation case name or private project references required for reproduction.
+
+Git commit metadata uses the GitHub account's configured commit email. That same address is already present in the author's existing public GitHub history. Future commits may be switched to a GitHub noreply address separately if desired; changing historical commit metadata would require history rewriting and is not treated as a prerequisite for this preliminary release.
+
 ## Current release boundary
 
-Ready for first public visibility as **preliminary research / protocol candidate** after repository settings are confirmed.
+Ready for first public visibility as **preliminary research / protocol candidate** after the remaining GitHub UI settings are confirmed.
 
 The following are intentionally *not* prerequisites for initial publication, but remain prerequisites for stronger claims:
 
