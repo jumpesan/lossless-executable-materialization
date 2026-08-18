@@ -71,20 +71,58 @@ CANONICAL_IDENTITY_UNPROVEN
 = required identity evidence is incomplete
 ```
 
-## Filesystem / dependency
+## Filesystem / materialization preconditions
 
 ```text
-OUTPUT_PATH_VIOLATION
-= materialization target escapes the permitted filesystem boundary
+MATERIALIZATION_ROOT_VIOLATION
+= resolved materialization path escapes the permitted root
 
+MATERIALIZATION_SYMLINK_DENIED
+= final target or a protected path component is a disallowed symlink/alias
+
+MATERIALIZATION_TARGET_EXISTS
+= a fresh materialization attempt found a pre-existing final target under a policy that requires absence
+
+MATERIALIZATION_STAGING_FAILURE
+= the runtime could not create or safely use the required staging location
+
+MATERIALIZATION_CLEANUP_FAILURE
+= a failed attempt could not prove that prohibited final/staging residue was removed or absent
+
+CACHE_REUSE_NOT_AUTHORIZED
+= local bytes may match canonical identity, but no explicit cache/reuse policy authorizes using that existing artifact
+```
+
+The v0.1 research baseline intentionally treats:
+
+```text
+fresh attempt + existing final target
+-> MATERIALIZATION_TARGET_EXISTS
+-> execution_eligible = false
+```
+
+Exact local byte equality does not override this precondition.
+
+## Dependency / execution unit
+
+```text
 UNDECLARED_EXECUTABLE_DEPENDENCY
 = execution requires code not authorized in the execution unit
 
 DEPENDENCY_IDENTITY_MISMATCH
 = a declared executable dependency fails identity verification
 
+DEPENDENCY_AUTHORITY_MISMATCH
+= a declared dependency does not have the required executable authority
+
+DEPENDENCY_BINDING_MISMATCH
+= the declared dependency/import binding does not match the materialized execution unit
+
 EXECUTION_UNIT_INCOMPLETE
 = the complete declared execution unit could not be materialized
+
+DATA_DEPENDENCY_AUTHORITY_VIOLATION
+= data/reference material is being treated as executable without separate executable authority
 ```
 
 ## Execution
@@ -115,10 +153,12 @@ semantic source repair
 alternate representation substitution
 functionally equivalent reimplementation
 human-obvious operand reordering
+implicit cache/reuse
+filesystem overwrite/delete/replace for convenience
 undeclared retry
 ```
 
-A future explicit retry protocol may create a **new attempt**, but must not mutate a terminal failed attempt into a PASS.
+A future explicit retry or cache protocol may create a separately authorized state, but must not mutate a terminal failed attempt into a PASS.
 
 ## Current evidence-linked examples
 
@@ -140,6 +180,21 @@ N6 unregistered near-identical executable
 
 N7 known-good repair candidates visible after N3-style failure
 -> COMPRESSED_IDENTITY_MISMATCH remains terminal; no repair/retry
+
+F1 final target symlink
+-> MATERIALIZATION_SYMLINK_DENIED
+
+F2 ancestor/root escape
+-> MATERIALIZATION_ROOT_VIOLATION
+
+F3 pre-existing final target
+-> MATERIALIZATION_TARGET_EXISTS
+
+F3 exact canonical bytes already present, but reuse not authorized
+-> MATERIALIZATION_TARGET_EXISTS / CACHE_REUSE_NOT_AUTHORIZED
+
+F4 failed staged identity with no allowed residue
+-> canonical identity failure remains terminal; cleanup must preserve a clean final/staging state
 ```
 
-This taxonomy should be revised as filesystem, dependency, USER_DATA, cache, and execution-handoff tests produce concrete evidence.
+This taxonomy should continue to evolve as dependency, USER_DATA, cache, concurrency, cross-platform filesystem, and execution-handoff tests produce concrete evidence.
