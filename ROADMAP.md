@@ -1,10 +1,12 @@
 # Research Roadmap
 
-This roadmap separates **evidence needed for publication**, **evidence needed for stronger protocol claims**, and **evidence needed for production integration**.
+This roadmap separates **evidence needed for publication**, **evidence needed for stronger protocol claims**, and **evidence needed for full production/runtime integration**.
+
+The `v0.1-preliminary` release remains a fixed historical snapshot. This roadmap tracks later work on `main`.
 
 ## Phase 0 — Preliminary feasibility
 
-Status: complete for the current positive-control scope.
+Status: complete for the tested scope.
 
 ```text
 [x] human-readable source counterexample: functional PASS / byte identity FAIL
@@ -17,7 +19,7 @@ Status: complete for the current positive-control scope.
 
 ## Phase 1 — Fail-closed semantics
 
-Status: strong for the primary sample, not universal.
+Status: strong representative coverage.
 
 ```text
 [x] N1 missing operand
@@ -26,35 +28,36 @@ Status: strong for the primary sample, not universal.
 [x] N5 final canonical identity mismatch
 [x] N6 unregistered near-identical executable
 [x] N7 explicit semantic-repair temptation after terminal failure
-[ ] duplicate operand declaration
-[ ] stale/wrong representation revision
-[ ] transport-normalization edge cases
+[x] duplicate chunk deterministic preflight denial
+[x] wrong/stale authority or representation revision denial in machine path
+[x] unsupported representation profile denial in machine path
+[ ] transport-normalization/ASCII-whitespace profile edges
 ```
 
-N4 dedicated gzip corruption remains intentionally skipped because N3 already proves the required compressed-identity gate before decompression.
+N4 dedicated gzip corruption remains optional because the tested contract rejects corrupted compressed identity before decompression.
 
 ## Phase 2 — Generalization and representation shape
 
-Status: multiple distinct artifact shapes now PASS; larger multi-chunk scaling is next.
+Status: required P1-P4 representative controls closed.
 
 ```text
-[x] second independent registered executable black-box exact-materialization PASS
+[x] second independent registered executable exact-materialization PASS
 [x] Unicode/newline-sensitive artifact exact-byte preservation PASS
-[ ] P4 larger payload / three-chunk exact materialization — READY_FOR_BLACK_BOX
+[x] P4 larger payload / three-chunk exact materialization PASS
 [ ] third artifact with another materially different source shape
 [ ] tiny/empty/final-padding boundary cases
 ```
 
-Current positive portability evidence includes:
+Current positive portability evidence:
 
 ```text
 P1 primary executable / 19555 bytes / multi-chunk = PASS
 P2 second registered executable / 5028 bytes / one chunk = PASS
 P3 Unicode + mixed-newline executable / 422 bytes / one chunk = PASS
-P4 larger executable / 13239 bytes / three chunks = READY
+P4 larger executable / 13239 bytes / three chunks = PASS
 ```
 
-P3 confirms that mixed CRLF/LF and composed/decomposed Unicode distinctions can survive exact byte materialization without text normalization.
+These results remain within the observed host/model family and do not establish cross-host portability.
 
 ## Phase 3 — Execution-unit and dependency semantics
 
@@ -66,6 +69,7 @@ Status: representative executable-dependency and data-role controls PASS.
 [x] D4 dependency canonical identity mismatch -> whole-unit DENY
 [x] D5 DATA_REFERENCE remains non-executable read-only input
 [x] D6 descriptor cannot promote DATA_REFERENCE into executable authority
+[x] machine path verifies all declared executable-member authority before representation processing
 [ ] cycle / duplicate executable dependency semantics
 ```
 
@@ -77,11 +81,9 @@ data consumption != executable authority
 descriptor claims != executable authority
 ```
 
-Every executable member must independently satisfy authority and exact identity before the unit becomes execution-eligible.
+## Phase 4 — Sandbox and workspace safety
 
-## Phase 4 — Sandbox and filesystem safety
-
-Representative v0.1 materialization preconditions are validated.
+Status: representative F0-F8 workspace behavior validated.
 
 ```text
 [x] F0 clean isolated root
@@ -89,25 +91,21 @@ Representative v0.1 materialization preconditions are validated.
 [x] F2 ancestor symlink/root escape -> DENY
 [x] F3 pre-existing final regular file -> DENY
 [x] F4 failed staged identity leaves no final/staging residue
-[x] F3 reasoning pressure: exact existing bytes do not imply cache/reuse authority
-[ ] F5 repeated/concurrent attempt isolation
-[ ] F6 TOCTOU hardening
-[ ] F7 cleanup-taint semantics
-[ ] F8 Windows/POSIX behavior
-[ ] final materialized permission policy
+[x] F3 exact existing bytes do not imply reuse authority
+[x] F5 repeated/concurrent attempt isolation
+[x] F6 ancestor/root replacement and tested TOCTOU-style detection
+[x] F7 cleanup failure -> monotonic TAINTED state
+[x] F8 explicit POSIX/Windows behavior + cross-platform CI
+[ ] kernel-level post-verification race immunity
+[ ] OS sandbox/process-tree/resource isolation
+[ ] final materialized permission policy beyond tested workspace scope
 ```
 
-Current baseline:
-
-```text
-fresh attempt + existing final target -> DENY
-```
-
-Cache/reuse remains a separate phase rather than an inferred filesystem convenience.
+Cache/reuse remains explicit and separate from filesystem convenience.
 
 ## Phase 5 — USER_DATA and untrusted-input separation
 
-Status: representative v0.1 USER_DATA boundary U1-U5 is closed for the tested scope.
+Status: representative v0.1 USER_DATA boundary U1-U5 closed.
 
 ```text
 [x] U1 USER_DATA cannot grant executable authority
@@ -115,121 +113,174 @@ Status: representative v0.1 USER_DATA boundary U1-U5 is closed for the tested sc
 [x] U3 USER_DATA cannot replace chunk/base path/executable path/materialization target
 [x] U4 execution-like USER_DATA remains inert data
 [x] U5 malformed USER_DATA fails owner-input lane without rewriting materialization state
-[ ] output provenance identifies execution inputs without leaking private data
+[x] generic fixed-file operation reverifies USER_DATA integrity before execution
 [ ] broader arbitrary-input / serialization edge cases
+[ ] privacy-preserving provenance conventions for sensitive input
 ```
 
-The current controls support a separation between:
+The current controls support:
 
 ```text
-artifact materialization state
-!= owner-input validity
+artifact materialization state != owner-input validity
 ```
 
-Malformed user data can deny owner invocation without retroactively changing a successful exact materialization result.
+## Phase 6 — Descriptor schema / machine preflight / materializer
 
-## Phase 6 — Cache / reuse
-
-Status: design pending. F3 establishes the no-implicit-reuse baseline.
+Status: representative machine path implemented and reviewed in a separate review lane.
 
 ```text
-[ ] cache identity key binds authority revision + path + canonical identity
-[ ] re-verification policy
-[ ] stale revision handling
-[ ] corrupted cache detection
-[ ] failed/unverified candidate never becomes execution-eligible cache
-[ ] representation cache never becomes authority
+[x] descriptor structural schema
+[x] deterministic non-authorizing preflight
+[x] historical D/U/P positive/negative descriptor regression
+[x] wrong repository/revision binding denial
+[x] wrong/stale representation revision denial
+[x] strict external authority + representation + canonical materializer
+[x] exact authority Git-object / reconstructed Git-object convergence
+[x] one-member live external materialization probe
+[x] multi-member materializer selftest
+[x] self-hosted immutable-revision descriptor resolution without self-authorization
+[ ] public reference schema/validator package stabilization
+[ ] normative profile/version registry
 ```
 
-## Phase 7 — Execution handoff
-
-Status: partial; dependency and USER_DATA controls strengthened the boundary, but final owner handoff remains open.
+Important boundary:
 
 ```text
-[ ] machine-readable materialization result
-[ ] exact transition to EXECUTION_ELIGIBLE
-[ ] owner execution interface
-[ ] structured result contract
-[ ] failure evidence contract
-[x] compile/import occurs only after whole execution unit is eligible in representative controls
-[x] owner-input validity is distinct from artifact execution eligibility
+schema/preflight PASS != executable authority
 ```
 
-## Phase 8 — Cross-host / model portability
+## Phase 7 — Cache / reuse
+
+Status: representative single-member cache contract PASS.
 
 ```text
-[ ] another ChatGPT execution context
+[x] raw cache is a non-authorizing byte store
+[x] cache use requires current authority resolution
+[x] cached exact bytes are reverified
+[x] failed/unverified candidate cannot become execution-eligible cache
+[x] representation cache cannot become executable authority
+[x] trusted orchestrator alone may restore execution_eligible=true after revalidation
+[ ] mixed execution-unit cache orchestration
+[ ] broader distributed/stale-cache topologies
+```
+
+## Phase 8 — Execution handoff
+
+Status: representative execution-handoff contract and generic fixed-file validator operation PASS.
+
+```text
+[x] machine-readable materialization result
+[x] explicit transition to EXECUTION_ELIGIBLE
+[x] execution eligibility separated from owner invocation eligibility
+[x] process success separated from domain semantic result
+[x] trusted runtime/argv/cwd/env/shell ownership in tested operation
+[x] fixed USER_DATA integrity reverification before launch
+[x] structured result / accepted exit classification
+[x] cleanup evidence and failure-domain preservation
+[ ] arbitrary owner execution interfaces
+[ ] full host end-to-end integration across all reviewed primitives
+```
+
+## Phase 9 — Trusted runtime binding
+
+Status: representative non-authorizing binding controls PASS.
+
+```text
+[x] trusted operation/binding selection is host-owned
+[x] unknown operation denied before referenced reads
+[x] descriptor/contract role binding checked before use
+[x] binding cannot select repository-reader implementation
+[x] binding itself grants no executable authority
+[x] self-hosted descriptor resolver substitutes only externally selected immutable revision
+[ ] broader provider/transport implementations
+```
+
+## Phase 10 — Cross-host / model portability
+
+Status: open.
+
+```text
+[ ] another ChatGPT execution context with materially different retrieval behavior
 [ ] another model family
 [ ] another LLM vendor/host
-[ ] host with different Web retrieval behavior
 [ ] host with different sandbox/network constraints
+[ ] independent third-party reproduction of the machine path
 ```
 
-Current P1-P3 results demonstrate artifact/representation-shape portability within the observed host/model family; they do not establish cross-host portability.
+P1-P4 show artifact/representation-shape portability only within the observed host/model family.
 
-## Phase 9 — Specification hardening
+## Phase 11 — Specification hardening
 
 ```text
-[ ] descriptor schema refinement/finalization
-[ ] machine/reference validator
-[ ] normative failure codes
-[ ] profile registry model
+[ ] stabilize public machine-readable descriptor schema
+[ ] stabilize public reference validator/materializer interface
+[ ] normative failure-code registry
+[ ] representation profile registry
 [ ] explicit retry semantics
 [ ] version negotiation
 [ ] upgrade / rollback semantics
-[ ] authority binding to signed/provenance metadata
+[ ] signed/provenance metadata binding model
+[ ] decide whether a v0.2 protocol draft or preprint is warranted
 ```
 
 ## Current recommended sequence
 
 ```text
-1. P4 larger payload / three-chunk black-box exact materialization
-2. descriptor schema refinement + machine validator
-3. cache/reuse semantics + final execution-handoff validation
-4. filesystem F5-F8 production hardening
-5. cross-host/model portability
-6. decide runtime manifest/schema integration only after the relevant gates close
+1. synchronize current machine/review evidence into the public research record
+2. complete full trusted-host end-to-end integration without widening authority
+3. exercise remaining dependency/cache/transport boundary cases
+4. obtain cross-host/vendor and ideally third-party reproduction evidence
+5. stabilize the public descriptor/validator/materializer surface
+6. consider a stronger protocol paper/preprint or v0.2 draft
+7. keep live/runtime promotion and final release as separate authorization decisions
 ```
 
 ## Publication thresholds
 
 ### Preliminary public release
 
-**Current status: achieved/supportable** for a preliminary protocol-candidate release.
+**Achieved/supportable.**
 
-Current basis:
-
-```text
-positive exact materialization across multiple registered executable shapes
-+ meaningful plain-source counterexample
-+ fail-closed N-controls
-+ representative filesystem safety controls
-+ multi-file dependency authority/identity controls
-+ DATA_REFERENCE role-separation controls
-+ USER_DATA boundary controls
-+ Unicode/newline exact-byte preservation
-+ public synthetic reproduction fixture
-+ explicit limitations
-+ prior-art scan
-+ open reproduction invitation
-```
+The existing `v0.1-preliminary` release remains a valid historical preliminary snapshot.
 
 ### Stronger protocol paper / preprint
 
-Several previously preferred evidence items are now present: multi-file/dependency black-box evidence and Unicode/newline-sensitive exact-byte evidence.
-
-Remaining high-value additions include:
+The evidence base is now materially stronger than at preliminary release:
 
 ```text
-P4 larger multi-chunk PASS
-+ descriptor/schema stabilization and machine validation
-+ at least one cross-host/model result
-+ cache/reuse semantics
-+ clearer final execution-handoff contract
+P1-P4 exact materialization
++ multi-file/dependency controls
++ DATA_REFERENCE / USER_DATA separation
++ deterministic schema/preflight/materializer path
++ representative cache/reuse contract
++ representative execution handoff
++ F0-F8 workspace hardening
++ trusted non-authorizing binding/resolution
 ```
 
-### Production integration
+High-value remaining additions:
 
-Requires substantially broader validation than publication, especially around filesystem concurrency/TOCTOU, cache/reuse, execution handoff, upgrades/rollback, broader input handling, dependency cycles, and host/platform portability.
+```text
+cross-host/vendor reproduction
++ third-party machine-path reproduction
++ remaining dependency/cache edge cases
++ public schema/interface stabilization
++ full trusted-host integration evidence
+```
 
-The research should not collapse publication, stronger protocol claims, and production integration into one threshold.
+### Production/runtime integration
+
+Substantially advanced, but **not complete**.
+
+The current evidence does not claim:
+
+```text
+kernel-level race immunity
+OS sandbox/resource isolation
+arbitrary owner-interface coverage
+mixed-unit cache completeness
+cross-host universality
+live/runtime promotion completion
+```
+
+Publication, stronger protocol claims, and production/runtime promotion remain separate thresholds.
