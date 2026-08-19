@@ -14,7 +14,7 @@ This repository focuses on a protocol candidate that emerged from real LLM-hoste
 
 The problem appeared after the LLM could determine **which deterministic executable should run**, while the host-provided execution environment could not reliably obtain the exact registered executable bytes.
 
-A critical black-box counterexample then showed that human-readable source can preserve program meaning while losing byte identity:
+A critical black-box counterexample showed that human-readable source can preserve meaning and behavior while losing byte identity:
 
 ```text
 functional behavior = PASS
@@ -29,13 +29,15 @@ This changed the problem from source reconstruction to **lossless executable mat
 
 ```text
 Executable Authority
+-> Materialization Descriptor / Trusted Binding
 -> Lossless Representation
--> Representation Acquisition
--> Deterministic Assembly
+-> Deterministic Acquisition and Assembly
 -> Mechanical Decode / Materialization
--> Identity Proof
+-> Exact Identity Proof
+-> Filesystem / Workspace Preconditions
 -> Execution Eligibility
--> Deterministic Execution Evidence
+-> Owner Invocation Eligibility
+-> Process / Structured Evidence
 ```
 
 The central invariant is:
@@ -50,17 +52,21 @@ A program that compiles, runs, and produces the expected result is still not tre
 
 ### Current empirical evidence
 
-Current evidence now spans **multiple registered executable shapes**, including the two original single-file controls, a registered multi-file execution unit, and a Unicode/newline-sensitive artifact.
+The evidence base has moved substantially beyond the initial feasibility experiments.
 
-For the primary sample:
+Observed black-box / artifact-shape controls now include:
 
 ```text
-plain chunked Base64 / GPT-5.6 Instant = EXACT PASS
-plain chunked Base64 / GPT-5.6 High    = EXACT PASS
-deterministic gzip + Base64 / GPT-5.6 Instant = EXACT PASS
+P1 primary executable / plain Base64 + gzip/Base64 = PASS
+P2 second registered executable = PASS
+P3 Unicode + mixed CRLF/LF exact-byte preservation = PASS
+P4 larger 13,239-byte / three-chunk materialization = PASS
+D2-D6 multi-file dependency / DATA_REFERENCE controls = PASS
+U1-U5 USER_DATA separation controls = PASS
+N1-N7 representative fail-closed controls = PASS (N4 intentionally skipped)
 ```
 
-The deterministic gzip + Base64 profile reduced the tested transport representation from:
+The original primary gzip + Base64 profile reduced the tested transport representation from:
 
 ```text
 26076 characters / 7 chunks
@@ -70,48 +76,94 @@ The deterministic gzip + Base64 profile reduced the tested transport representat
 
 or approximately **79% fewer transport characters** for that sample.
 
-A second registered executable also passed exact black-box materialization with GPT-5.6 Instant.
-
-Fail-closed controls for the current samples include:
+P4 later confirmed exact ordered materialization across three chunks:
 
 ```text
-missing declared operands
-counterintuitive declared chunk order
-one-character payload corruption
-final canonical identity mismatch
-unregistered near-identical executable
-explicit semantic-repair temptation after terminal failure
+canonical size = 13239 bytes
+encoded length = 9780 characters
+chunk lengths = 4096 / 4096 / 1588
+strict Base64 decode count = 1
+gzip decompression count = 1
+canonical identity = PASS
+binary reread exact = true
+execution_eligible = true
 ```
 
-Representative filesystem controls F0-F4 also passed. These cover clean isolated materialization, final-target symlink denial, ancestor/root-escape denial, pre-existing final-target denial, and failed staged-materialization cleanup. A reasoning-pressure run additionally confirmed that even a pre-existing file with exact canonical bytes was **not** silently upgraded into cache/reuse authority.
+### Machine-enforced path
 
-Representative execution-unit controls D2-D6 now also pass. These cover a positive two-file registered execution unit, omission of a required executable dependency, dependency identity mismatch, DATA_REFERENCE remaining non-executable, and denial of descriptor-based promotion from data role to executable authority.
+The research also moved from LLM-observed procedure into a deterministic machine path.
 
-Representative USER_DATA controls U1-U5 pass as well. User-controlled fields did not gain executable authority, replace authority/representation revisions or materialization paths, become executable instructions, or rewrite successful materialization state when malformed.
+Representative validated components now include:
 
-P3 also passed exact-byte preservation for a Unicode/newline-sensitive artifact, including mixed CRLF/LF and composed/decomposed Unicode distinctions. The next prepared scaling control, P4, uses a 13,239-byte canonical artifact represented as three Base64 chunks and is **READY_FOR_BLACK_BOX, not yet PASS**.
+```text
+descriptor schema / structural validation
+non-authorizing machine preflight
+historical positive/negative descriptor regression
+external immutable authority binding
+deterministic representation acquisition/materialization
+exact canonical Git-object convergence
+single-member cache/reuse contract
+execution-handoff separation
+generic fixed-file validator operation
+F0-F8 workspace hardening across POSIX/Windows
+non-authorizing trusted runtime binding
+self-hosted immutable-revision descriptor resolution
+```
 
-These results are **sample-scoped preliminary evidence**, not a production guarantee or novelty proof.
+The trusted path keeps the following separation explicit:
+
+```text
+schema/preflight PASS
+!= executable authority
+
+materialization PASS
+!= owner invocation eligibility
+!= process success
+!= domain semantic success
+```
+
+The deterministic materializer does not use semantic LLM reconstruction, repair, alternate-representation search, or functional plausibility to override failed exact gates.
+
+### Filesystem and cache boundary
+
+Representative F0-F8 workspace controls now pass for the tested implementation, including repeated/concurrent attempt isolation, tamper/replacement detection, monotonic TAINTED cleanup-failure state, and explicit POSIX/Windows behavior.
+
+Cache/reuse is also explicit rather than inferred from local byte equality:
+
+```text
+raw cache = non-authorizing exact byte store
+current authority must be re-resolved
+cached bytes must be reverified
+only trusted orchestration may restore execution_eligible=true
+```
+
+Mixed execution-unit cache orchestration remains open.
+
+### What is still open
+
+These results are **sample-scoped research evidence**, not a universal production guarantee or novelty proof.
+
+Important remaining work includes:
+
+```text
+cross-host / cross-vendor reproduction
+independent third-party machine-path reproduction
+dependency cycle/duplicate edge semantics
+mixed-unit cache semantics
+remaining transport-normalization/boundary cases
+full trusted-host end-to-end integration
+broader OS/process sandbox and resource isolation
+public schema/interface stabilization
+```
+
+Live/runtime promotion and final release remain separate authorization decisions from protocol validation.
 
 ### Public reference fixture
 
-The repository also includes a domain-neutral synthetic executable fixture so the materialization flow can be reproduced without depending on the application domain that originally exposed the problem.
+The repository includes a domain-neutral synthetic executable fixture so the basic materialization flow can be reproduced without depending on the application domain that originally exposed the problem.
 
 ```bash
 python fixtures/verify_reference_fixture.py
-```
-
-The verifier exercises:
-
-```text
-ordered operand acquisition
--> strict Base64 decode
--> compressed identity verification
--> deterministic gzip decompression
--> canonical identity verification
--> compile
--> deterministic execution
--> structured-result validation
 ```
 
 See [fixtures/README.md](fixtures/README.md).
@@ -136,7 +188,7 @@ See [AI_ASSISTANCE.md](AI_ASSISTANCE.md).
 
 This project does **not** claim invention of Base64, gzip, hashing, chunking, manifests, content addressing, reproducible execution, or software-supply-chain verification. Strong prior art exists in OCI, TUF, SRI, Nix, BitTorrent/IPFS/IPLD, MCP resources, Agent Skills, in-toto/SLSA/Sigstore, and adjacent execution-integrity work.
 
-The research question is whether those mature primitives form a useful protocol layer for an LLM-host boundary where:
+The research question is whether mature primitives can form a useful protocol layer for an LLM-host boundary where:
 
 ```text
 host-visible representations may be normalized or transformed
@@ -175,6 +227,7 @@ spec/
 
 experiments/
   README.md
+  2026-08-19-validation-update.md
 
 fixtures/
   README.md
@@ -202,11 +255,14 @@ Read more:
 - [予備技術レポート — 日本語](reports/preliminary-report.ja.md)
 - [Protocol Draft v0.1](spec/protocol-draft-v0.1.md)
 - [Experiment Matrix](experiments/README.md)
+- [2026-08-19 Validation Update](experiments/2026-08-19-validation-update.md)
 - [Public Reference Fixture](fixtures/README.md)
 - [AI Assistance Disclosure](AI_ASSISTANCE.md)
 - [Prior-Art Scan](research/prior-art.md)
 - [Research Roadmap](ROADMAP.md)
 - [v0.1-preliminary Release Notes](RELEASE_NOTES.md)
+
+The `v0.1-preliminary` release/tag is a fixed historical snapshot; later evidence is tracked on `main`.
 
 Independent reproduction, counterexamples, closer prior art, cross-model/host tests, and protocol-design criticism are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
@@ -232,17 +288,18 @@ Independent reproduction, counterexamples, closer prior art, cross-model/host te
 
 ### プロトコル候補
 
-仕様上の概念名は英語表記を維持しますが、日本語ではおおむね次の意味です。
-
 ```text
-Executable Authority        実行ファイルの認可
--> Lossless Representation  損失のない表現
--> Representation Acquisition 表現の取得
--> Deterministic Assembly    決定論的な組み立て
--> Mechanical Decode / Materialization 機械的な復号・実体化
--> Identity Proof            同一性の証明
--> Execution Eligibility     実行資格
--> Deterministic Execution Evidence 決定論的実行の証拠
+Executable Authority              実行ファイルの認可
+-> Materialization Descriptor     実体化記述子
+-> Trusted Binding                信頼された選択・結び付け
+-> Lossless Representation        損失のない転送表現
+-> Deterministic Acquisition      決定論的な取得
+-> Mechanical Materialization     機械的な実体化
+-> Exact Identity Proof           完全同一性の証明
+-> Workspace Preconditions        作業領域の前提条件
+-> Execution Eligibility          実行資格
+-> Owner Invocation Eligibility   所有側呼び出し資格
+-> Process / Structured Evidence  プロセス・構造化証拠
 ```
 
 中心となる不変条件は次です。
@@ -255,17 +312,19 @@ Executable Authority        実行ファイルの認可
 
 ### 現在の実証結果
 
-現在の実証範囲は、当初の**2つの登録済み単一ファイル実行物**に加えて、登録済みの複数ファイル実行単位、Unicode/改行に敏感な実行物まで広がっています。
-
-主要な試料では:
+現在は初期のBase64実験を越えて、次の代表系まで進んでいます。
 
 ```text
-plain chunked Base64 / GPT-5.6 Instant = EXACT PASS
-plain chunked Base64 / GPT-5.6 High    = EXACT PASS
-deterministic gzip + Base64 / GPT-5.6 Instant = EXACT PASS
+P1 主要実行物 = PASS
+P2 2つ目の登録済み実行物 = PASS
+P3 Unicode + CRLF/LF混在の完全バイト保持 = PASS
+P4 13,239バイト / 3チャンクの実体化 = PASS
+D2-D6 複数ファイル依存関係 / DATA_REFERENCE境界 = PASS
+U1-U5 USER_DATA境界 = PASS
+N1-N7 代表的fail-closed制御 = PASS（N4は意図的skip）
 ```
 
-決定論的gzip + Base64方式では、同一試料の転送表現を
+主要試料では決定論的gzip + Base64によって、転送表現を
 
 ```text
 26076文字 / 7チャンク
@@ -273,41 +332,87 @@ deterministic gzip + Base64 / GPT-5.6 Instant = EXACT PASS
 5480文字 / 2チャンク
 ```
 
-へ削減し、約79%の転送文字数削減を確認しました。
+へ削減しました。
 
-さらに2つ目の登録済み実行ファイルでも、GPT-5.6 Instantによるブラックボックスでの完全一致実体化がPASSしています。
+P4では3チャンクについて、全チャンクの個別同一性確認後に宣言順で1回だけ結合し、Base64復号1回、gzip展開1回、正本同一性確認、binary rereadまで完全一致しています。
 
-フェイルクローズ（失敗時は安全側に拒否する）制御では、宣言済みオペランドの欠落、直感に反するチャンク順序、1文字のペイロード破損、最終的な正本同一性の不一致、未登録の近似実行ファイル、終端失敗後の意味的修復への明示的な誘惑を検証しています。
+### Machine実装への移行
 
-ファイルシステムについても代表的なF0-F4がPASSしており、シンボリックリンク、ルート外への逸脱、既存の最終ターゲット、失敗後のステージング残留物を拒否できています。また、既存ターゲットが正本バイト列と完全一致していても、それを暗黙のキャッシュヒットや再利用権限へ昇格しないことを推論圧力テストで確認しています。
+現在は「LLMが手順を守れるか」という観測だけではなく、機械的に強制する経路まで進んでいます。
 
-依存関係・実行単位ではD2-D6がPASSしました。2ファイルの登録済み実行単位の正常系、必須実行依存の欠落、依存先の同一性不一致、DATA_REFERENCEが実行権限を持たないこと、記述子からデータ役割を実行権限へ昇格できないことを確認しています。
+代表的に確認済みなのは次です。
 
-USER_DATAではU1-U5がPASSしました。ユーザー制御の値から実行権限を追加したり、認可・表現のリビジョンやチャンク/パス/実体化先を書き換えたり、`eval` / `exec` / `import` / shell / subprocessのような値を命令として実行したりできないことを代表的な制御で確認しています。壊れたUSER_DATAも、すでに成功した実体化状態を書き換えませんでした。
+```text
+記述子schema / 構造検証
+非認可のmachine preflight
+過去descriptorのpositive/negative回帰
+外部immutable authority binding
+決定論的representation取得・実体化
+canonical Git objectとの完全一致
+単一member cache/reuse Contract
+Execution Handoff分離
+固定USER_DATAファイルを使うgeneric validator operation
+F0-F8 workspace hardening（POSIX/Windows）
+非認可のtrusted runtime binding
+self-hosted immutable revision descriptor解決
+```
 
-P3では、CRLF/LF混在とUnicodeの合成済み/分解済み表現を含む実行物をバイト単位で完全一致のまま実体化できました。次のP4は、13,239バイトの正本実行物を3つのBase64チャンクで扱う拡張検証で、**READY_FOR_BLACK_BOXであり、まだPASSには数えていません**。
+ここでも、
 
-これらは現在の試料に限定した予備的な実証結果であり、本番運用の安全性や一般的な新規性を主張するものではありません。
+```text
+schema/preflight PASS
+!= 実行ファイルの認可
+
+materialization PASS
+!= owner invocation eligibility
+!= process success
+!= domain semantic success
+```
+
+を維持します。
+
+決定論的materializerは、失敗したexact gateをLLMによる意味的修復・推測・別representation探索・「動きそうだから」という判断で上書きしません。
+
+### Filesystem / Cache
+
+F0-F8の代表的workspace制御は、繰り返し/同時attemptの分離、内容改変・ファイル置換・ancestor/root置換の検知、cleanup failure時の単調な`TAINTED`状態、POSIX/Windows双方のmachine evidenceまでPASSしています。
+
+Cache/reuseも既存fileの一致から暗黙に推論せず、明示的なContractになっています。
+
+```text
+raw cache = 認可を持たないexact byte store
+current authorityを毎回再確認
+cache bytesを再検証
+trusted orchestrationだけが再検証後にexecution_eligible=trueを復元可能
+```
+
+複数memberを含むcache orchestrationはまだ未完です。
+
+### まだ未完了のもの
+
+現在の結果は**試料・実装範囲に限定した研究Evidence**であり、普遍的なProduction保証や新規性証明ではありません。
+
+主な残りは次です。
+
+```text
+cross-host / cross-vendor再現
+第三者によるmachine path再現
+dependency cycle/duplicate edge
+mixed-unit cache
+transport normalization / boundary edge
+trusted-host全体のend-to-end統合
+OS/process sandbox・resource isolation
+公開schema/interfaceの安定化
+```
+
+Runtime live promotionやfinal releaseは、Protocol検証とは別の認可判断です。
 
 ### 公開用参照フィクスチャ
 
-アプリケーションの分野に依存せず第三者が実体化手順を確認できるように、分野非依存の合成実行フィクスチャも同梱しています。
+アプリケーション分野に依存せず第三者が基本的な実体化手順を確認できるよう、分野非依存の合成実行フィクスチャも同梱しています。
 
 ```bash
 python fixtures/verify_reference_fixture.py
-```
-
-検証器は次を機械的に確認します。
-
-```text
-宣言順にオペランドを取得
--> 厳密なBase64復号
--> 圧縮データの同一性検証
--> 決定論的なgzip展開
--> 正本との同一性検証
--> コンパイル
--> 決定論的な実行
--> 構造化結果の検証
 ```
 
 詳細は [fixtures/README.md](fixtures/README.md) を参照してください。
@@ -316,15 +421,15 @@ python fixtures/verify_reference_fixture.py
 
 このリポジトリでは、**Lossless Executable Materializationプロトコルそのものと、その評価に必要な実証結果**に対象を絞ります。
 
-問題が最初に発生したアプリケーション全体のアーキテクチャや分野固有の実装を公開・解説することは目的にしません。元のアプリケーション分野を知らなくても、このプロトコルは理解・再現できる構成にします。
+問題が最初に発生したアプリケーション全体のアーキテクチャや分野固有の実装を公開・解説することは目的にしません。
 
 ### AI利用の開示
 
-本研究およびリポジトリ作成では、**AIアシスタントを積極的かつ広範囲に使用しています**。プロトコル/アーキテクチャ検討、仮説生成と反論、実験計画、コード・文書の下書きやリファクタリング、分析支援、先行技術調査支援、編集、翻訳、リポジトリ整備などに利用しています。
+本研究およびリポジトリ作成では、AIアシスタントを積極的かつ広範囲に使用しています。プロトコル/アーキテクチャ検討、仮説生成と反論、実験計画、コード・文書作成、分析、調査支援、編集・翻訳などに利用しています。
 
-またAI/LLMは、研究支援とは別に、実験対象となる実行環境/ホストの一部としても登場します。この2つの役割は区別します。
+一方でAI/LLMは、研究支援とは別に実験対象となるホスト/実行環境の一部でもあります。この2つの役割は区別します。
 
-AI生成の文章・コード・解釈そのものは、単独では実験的証拠として扱いません。主張は、検査可能な成果物、暗号学的な同一性情報、機械実行結果、構造化出力、否定系制御、ブラックボックス観測などの検証可能な証拠へ結び付けます。研究方向、証拠の採否、解釈、公開内容については人間の研究者が責任を持ちます。
+AI生成物そのものは単独では実験的証拠として扱わず、検査可能なartifact、暗号学的identity、machine execution、structured output、negative control、black-box observationへ結び付けます。
 
 詳細は [AI_ASSISTANCE.md](AI_ASSISTANCE.md) を参照してください。
 
@@ -345,7 +450,10 @@ AI生成の文章・コード・解釈そのものは、単独では実験的証
 - [英語 予備技術レポート](reports/preliminary-report.en.md)
 - [プロトコル草案 v0.1](spec/protocol-draft-v0.1.md)
 - [実験一覧](experiments/README.md)
+- [2026-08-19 Validation Update](experiments/2026-08-19-validation-update.md)
 - [公開用参照フィクスチャ](fixtures/README.md)
 - [先行技術調査](research/prior-art.md)
 - [研究ロードマップ](ROADMAP.md)
 - [v0.1-preliminary リリースノート](RELEASE_NOTES.md)
+
+`v0.1-preliminary`タグは固定された過去スナップショットであり、その後のEvidenceは`main`で更新します。
