@@ -18,6 +18,8 @@ novelty_claim: not established
 **公開ライセンス:** CC BY 4.0  
 **AI利用:** 広範囲。詳細は [AI_ASSISTANCE.md](../AI_ASSISTANCE.md)
 
+> **履歴スナップショット注記:** 本予備レポートは初回公開時点付近のEvidenceを記述している。その後のmachine pathおよびHost-surface relayのEvidenceは、`main`の[現在のREADME](../README.md)、[2026-08-19 validation update](../experiments/2026-08-19-validation-update.md)、[2026-08-30 host-surface relay update](../experiments/2026-08-30-host-surface-relay-update.md)で追跡する。本レポート後半の「未確立」項目は、この履歴時点の記述として読む必要がある。
+
 ---
 
 # 概要

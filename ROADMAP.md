@@ -178,8 +178,34 @@ Status: representative execution-handoff contract and generic fixed-file validat
 [x] structured result / accepted exit classification
 [x] cleanup evidence and failure-domain preservation
 [ ] arbitrary owner execution interfaces
-[ ] full host end-to-end integration across all reviewed primitives
 ```
+
+## Phase 8A — Host-surface transfer / trusted-host integration
+
+Status: bounded relay primitive established; generic cross-unit transport remains open.
+
+```text
+[x] H1 observe external transport while sandbox-local exact handoff is unavailable
+[x] H2 local attachment-plane canonical execution PASS across low/high reasoning endpoints
+[x] H2 representative owner-input semantic-negative result remains fail-closed
+[x] H3 large monolithic caller-context relay FAIL under no-refetch contract
+[x] H4 small chunked caller-context literal relay PASS
+[ ] unit-agnostic execution-surface relay descriptor/profile
+[ ] deterministic transport builder from immutable registered inputs
+[ ] dynamic chunk count + per-chunk identity + final transported-object identity
+[ ] cross-unit proof across materially different input/dependency shapes
+[ ] full trusted-host end-to-end integration across all reviewed primitives
+```
+
+Current bounded evidence supports:
+
+```text
+resource observable by host
+!= caller-context exact operand availability
+!= execution-surface exact byte availability
+```
+
+It does not establish a universal safe chunk size or generic application-wide transport.
 
 ## Phase 9 — Trusted runtime binding
 
@@ -226,13 +252,15 @@ P1-P4 show artifact/representation-shape portability only within the observed ho
 ## Current recommended sequence
 
 ```text
-1. synchronize current machine/review evidence into the public research record
-2. complete full trusted-host end-to-end integration without widening authority
-3. exercise remaining dependency/cache/transport boundary cases
-4. obtain cross-host/vendor and ideally third-party reproduction evidence
-5. stabilize the public descriptor/validator/materializer surface
-6. consider a stronger protocol paper/preprint or v0.2 draft
-7. keep live/runtime promotion and final release as separate authorization decisions
+1. keep current machine/review and host-surface relay evidence synchronized in the public record
+2. generalize the bounded execution-surface relay into a unit-agnostic, deterministic transport contract/builder
+3. prove the same relay/materializer across multiple execution-unit input/dependency shapes
+4. complete full trusted-host end-to-end integration without widening authority
+5. exercise remaining dependency/cache/transport boundary cases
+6. obtain cross-host/vendor and ideally third-party reproduction evidence
+7. stabilize the public descriptor/validator/materializer surface
+8. consider a stronger protocol paper/preprint or v0.2 draft
+9. keep live/runtime promotion and final release as separate authorization decisions
 ```
 
 ## Publication thresholds
@@ -256,6 +284,7 @@ P1-P4 exact materialization
 + representative execution handoff
 + F0-F8 workspace hardening
 + trusted non-authorizing binding/resolution
++ bounded host-surface transfer evidence (H1-H4)
 ```
 
 High-value remaining additions:
@@ -264,6 +293,7 @@ High-value remaining additions:
 cross-host/vendor reproduction
 + third-party machine-path reproduction
 + remaining dependency/cache edge cases
++ generic cross-unit execution-surface transfer
 + public schema/interface stabilization
 + full trusted-host integration evidence
 ```

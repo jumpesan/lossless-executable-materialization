@@ -16,6 +16,8 @@ novelty_claim: not established
 **Public release license:** CC BY 4.0  
 **AI assistance:** Extensive; see [AI_ASSISTANCE.md](../AI_ASSISTANCE.md)
 
+> **Historical-snapshot note:** This preliminary report describes the evidence available around the initial public release. Later machine-path evidence and host-surface relay results are tracked on `main` in the [current README](../README.md), [2026-08-19 validation update](../experiments/2026-08-19-validation-update.md), and [2026-08-30 host-surface relay update](../experiments/2026-08-30-host-surface-relay-update.md). Limitations stated later in this report should be read in that historical context.
+
 ---
 
 # Abstract

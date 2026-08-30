@@ -36,6 +36,21 @@ OPERAND_IDENTITY_MISMATCH
 = an acquired representation unit fails its declared identity
 ```
 
+## Execution-surface transfer
+
+```text
+EXECUTION_SURFACE_TRANSFER_UNAVAILABLE
+= declared exact transport data was resolved/observed on one host surface but could not be transferred into the execution surface under the active profile
+
+UNAUTHORIZED_REACQUISITION_ATTEMPT
+= the execution surface attempted an undeclared network/repository refetch or alternate acquisition route after host-side resolution
+
+TRANSFERRED_OBJECT_IDENTITY_MISMATCH
+= data reached the execution surface but the reconstructed transported object failed its declared final transport identity
+```
+
+Host resource visibility alone does not satisfy any of these transfer states.
+
 ## Assembly / decoding
 
 ```text
@@ -195,6 +210,15 @@ F3 exact canonical bytes already present, but reuse not authorized
 
 F4 failed staged identity with no allowed residue
 -> canonical identity failure remains terminal; cleanup must preserve a clean final/staging state
+
+H1 host can observe external transport but execution surface cannot receive exact bytes
+-> EXECUTION_SURFACE_TRANSFER_UNAVAILABLE
+
+H3 large caller-context object causes sandbox refetch fallback under a no-refetch contract
+-> UNAUTHORIZED_REACQUISITION_ATTEMPT
+
+H4 small exact caller-context chunks reconstruct the declared transported object
+-> transfer PASS only after final transported-object identity verification
 ```
 
-This taxonomy should continue to evolve as dependency, USER_DATA, cache, concurrency, cross-platform filesystem, and execution-handoff tests produce concrete evidence.
+This taxonomy should continue to evolve as dependency, USER_DATA, cache, concurrency, cross-platform filesystem, execution-handoff, and host-surface transfer tests produce concrete evidence.

@@ -31,7 +31,9 @@ This changed the problem from source reconstruction to **lossless executable mat
 Executable Authority
 -> Materialization Descriptor / Trusted Binding
 -> Lossless Representation
--> Deterministic Acquisition and Assembly
+-> Representation Acquisition
+-> Execution-Surface Transfer (where required)
+-> Deterministic Assembly
 -> Mechanical Decode / Materialization
 -> Exact Identity Proof
 -> Filesystem / Workspace Preconditions
@@ -64,6 +66,10 @@ P4 larger 13,239-byte / three-chunk materialization = PASS
 D2-D6 multi-file dependency / DATA_REFERENCE controls = PASS
 U1-U5 USER_DATA separation controls = PASS
 N1-N7 representative fail-closed controls = PASS (N4 intentionally skipped)
+H1 external resource visible -> sandbox-local handoff = BLOCKED / observed
+H2 local attachment-plane canonical execution = PASS / Instant + High
+H3 large monolithic caller-context relay = FAIL / route drift
+H4 small chunked caller-context literal relay = PASS
 ```
 
 The original primary gzip + Base64 profile reduced the tested transport representation from:
@@ -88,6 +94,57 @@ canonical identity = PASS
 binary reread exact = true
 execution_eligible = true
 ```
+
+### Host-surface transfer boundary
+
+Later trusted-host integration exposed a second boundary beyond representation fidelity:
+
+```text
+resource observable by the host
+!=
+exact operands available in caller/model context
+!=
+exact bytes available to the execution surface
+```
+
+Representative application-derived, domain-neutral observations now include:
+
+```text
+external transport observed through the host Web surface
+-> exact handoff into the execution sandbox = BLOCKED
+
+the same execution capsule available on the local attachment plane
+-> exact canonical execution = PASS / Instant + High
+
+one large caller-context staging object
+-> exact scalar relay not established
+-> sandbox refetch fallback attempted
+-> FAIL
+
+8 small exact caller-context chunks
+-> literal transfer into sandbox
+-> exact capsule reconstruction
+-> canonical execution = PASS
+```
+
+For the positive small-chunk sample:
+
+```text
+chunk count = 8
+chunk length = 1368 characters each
+concatenated encoded length = 10944
+decoded capsule size = 8207 bytes
+exact capsule identity = PASS
+canonical execution = PASS
+```
+
+The H4 verdict uses convergent evidence from two runs against the same immutable candidate because the host Activity UI did not expose one complete end-to-end trace. It therefore establishes a **bounded relay primitive** for the observed host/model surface, not generic application-wide transport or cross-host portability.
+
+Transport granularity is treated as a host-surface transport parameter. It does not create executable authority and does not belong to application/domain semantics.
+
+This repository still does not expand into application bootstrap, application-state ownership, or user-interface behavior; those remain outside the Lossless Executable Materialization scope.
+
+See [2026-08-30 Host-Surface Relay Update](experiments/2026-08-30-host-surface-relay-update.md).
 
 ### Machine-enforced path
 
@@ -151,7 +208,7 @@ independent third-party machine-path reproduction
 dependency cycle/duplicate edge semantics
 mixed-unit cache semantics
 remaining transport-normalization/boundary cases
-full trusted-host end-to-end integration
+generic cross-unit execution-surface relay and full trusted-host end-to-end integration
 broader OS/process sandbox and resource isolation
 public schema/interface stabilization
 ```
@@ -193,6 +250,8 @@ The research question is whether mature primitives can form a useful protocol la
 ```text
 host-visible representations may be normalized or transformed
 +
+host-observed exact data may not be transferable into the execution surface
++
 execution environments may have different acquisition capabilities
 +
 exact registered executable identity is still required before authoritative execution
@@ -228,6 +287,7 @@ spec/
 experiments/
   README.md
   2026-08-19-validation-update.md
+  2026-08-30-host-surface-relay-update.md
 
 fixtures/
   README.md
@@ -256,6 +316,7 @@ Read more:
 - [Protocol Draft v0.1](spec/protocol-draft-v0.1.md)
 - [Experiment Matrix](experiments/README.md)
 - [2026-08-19 Validation Update](experiments/2026-08-19-validation-update.md)
+- [2026-08-30 Host-Surface Relay Update](experiments/2026-08-30-host-surface-relay-update.md)
 - [Public Reference Fixture](fixtures/README.md)
 - [AI Assistance Disclosure](AI_ASSISTANCE.md)
 - [Prior-Art Scan](research/prior-art.md)
@@ -293,7 +354,9 @@ Executable Authority              実行ファイルの認可
 -> Materialization Descriptor     実体化記述子
 -> Trusted Binding                信頼された選択・結び付け
 -> Lossless Representation        損失のない転送表現
--> Deterministic Acquisition      決定論的な取得
+-> Representation Acquisition     表現の取得
+-> Execution-Surface Transfer     実行Surfaceへの転送（必要な場合）
+-> Deterministic Assembly         決定論的な組み立て
 -> Mechanical Materialization     機械的な実体化
 -> Exact Identity Proof           完全同一性の証明
 -> Workspace Preconditions        作業領域の前提条件
@@ -322,6 +385,10 @@ P4 13,239バイト / 3チャンクの実体化 = PASS
 D2-D6 複数ファイル依存関係 / DATA_REFERENCE境界 = PASS
 U1-U5 USER_DATA境界 = PASS
 N1-N7 代表的fail-closed制御 = PASS（N4は意図的skip）
+H1 外部resource観測 -> sandbox-local handoff = BLOCKED / 観測済み
+H2 local attachment planeでのcanonical execution = PASS / Instant + High
+H3 大きな単一caller-context relay = FAIL / route drift
+H4 小チャンクcaller-context literal relay = PASS
 ```
 
 主要試料では決定論的gzip + Base64によって、転送表現を
@@ -335,6 +402,57 @@ N1-N7 代表的fail-closed制御 = PASS（N4は意図的skip）
 へ削減しました。
 
 P4では3チャンクについて、全チャンクの個別同一性確認後に宣言順で1回だけ結合し、Base64復号1回、gzip展開1回、正本同一性確認、binary rereadまで完全一致しています。
+
+### Host Surface間の転送境界
+
+その後のtrusted-host統合では、表現忠実性とは別に、LLM Host内部のSurface間転送という境界が観測された。
+
+```text
+Hostがresourceを観測できる
+!=
+caller/model Contextでexact operandを利用できる
+!=
+execution sandboxでexact bytesを利用できる
+```
+
+分野固有情報を除いた代表的な観測は次のとおり。
+
+```text
+外部transportをHost Web surfaceで観測
+-> execution sandboxへのexact handoff = BLOCKED
+
+同じexecution capsuleをlocal attachment planeに配置
+-> exact canonical execution = PASS / Instant + High
+
+大きな単一caller-context staging object
+-> exact scalar relayを確立できず
+-> sandbox refetchへfallback
+-> FAIL
+
+8個の小さいexact chunk
+-> caller Contextからsandboxへliteral転送
+-> exact capsule再構成
+-> canonical execution = PASS
+```
+
+小チャンク正常系では、
+
+```text
+chunk数 = 8
+各chunk = 1368文字
+結合後encoded length = 10944
+decoded capsule = 8207バイト
+capsule exact identity = PASS
+canonical execution = PASS
+```
+
+を確認した。H4は、HostのActivity UIが単一runの完全なend-to-end traceを表示しなかったため、同じimmutable candidateに対する2回の収束したEvidenceを組み合わせて判定している。このため主張範囲は、観測したHost/model surfaceにおける**限定されたrelay primitiveの成立**までであり、application-wideな汎用transportやcross-host portabilityまでは含まない。
+
+chunk granularityはHost surfaceのtransport parameterとして扱い、実行ファイルの認可やApplication Domain semanticsを生成しない。
+
+本公開Repoは引き続きApplication bootstrap、Application state ownership、UI/UX挙動そのものは対象外とする。
+
+詳細: [2026-08-30 Host-Surface Relay Update](experiments/2026-08-30-host-surface-relay-update.md)
 
 ### Machine実装への移行
 
@@ -400,7 +518,7 @@ cross-host / cross-vendor再現
 dependency cycle/duplicate edge
 mixed-unit cache
 transport normalization / boundary edge
-trusted-host全体のend-to-end統合
+generic cross-unit execution-surface relay + trusted-host全体のend-to-end統合
 OS/process sandbox・resource isolation
 公開schema/interfaceの安定化
 ```
@@ -451,6 +569,7 @@ AI生成物そのものは単独では実験的証拠として扱わず、検査
 - [プロトコル草案 v0.1](spec/protocol-draft-v0.1.md)
 - [実験一覧](experiments/README.md)
 - [2026-08-19 Validation Update](experiments/2026-08-19-validation-update.md)
+- [2026-08-30 Host-Surface Relay Update](experiments/2026-08-30-host-surface-relay-update.md)
 - [公開用参照フィクスチャ](fixtures/README.md)
 - [先行技術調査](research/prior-art.md)
 - [研究ロードマップ](ROADMAP.md)

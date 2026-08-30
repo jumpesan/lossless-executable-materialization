@@ -18,7 +18,7 @@ A result may pass one layer while failing another.
 
 The public record intentionally describes protocol-relevant evidence without depending on the application domain that originally exposed the problem.
 
-For dated evidence added after the `v0.1-preliminary` snapshot, see [`2026-08-19-validation-update.md`](2026-08-19-validation-update.md).
+For dated evidence added after the `v0.1-preliminary` snapshot, see [`2026-08-19-validation-update.md`](2026-08-19-validation-update.md) and [`2026-08-30-host-surface-relay-update.md`](2026-08-30-host-surface-relay-update.md).
 
 ---
 
@@ -507,6 +507,75 @@ Representative machine controls and a separate review lane passed.
 
 ---
 
+# 12A. Host-surface transfer controls H1-H4
+
+Trusted-host integration exposed a boundary that the earlier representation/materialization tests did not isolate:
+
+```text
+host resource observation
+!=
+caller-context exact operand availability
+!=
+execution-surface exact byte availability
+```
+
+Current domain-neutral host-surface controls:
+
+```text
+H1 external resource visible -> sandbox-local exact handoff
+   = BLOCKED / observed
+
+H2 same execution capsule on local attachment plane
+   = canonical execution PASS / GPT-5.6 Instant + High
+   = representative semantic-negative owner input also failed closed
+
+H3 one large caller-context staging object
+   = exact scalar relay not established
+   = sandbox refetch fallback observed
+   = FAIL for the no-refetch relay contract
+
+H4 eight small exact caller-context chunks
+   = literal sandbox relay observed
+   = reconstructed transport identity PASS
+   = canonical execution PASS
+```
+
+H4 bounded sample:
+
+```text
+chunk count = 8
+per-chunk encoded length = 1368
+combined encoded length = 10944
+decoded transported object size = 8207 bytes
+transported object SHA-256 =
+ecbe9641f9569c10d00b380de9f7bb1d28b0cbc564dabaa0dc499347f70e1e7f
+canonical executable size = 20541 bytes
+canonical executable SHA-256 =
+0a363c3f88c9b5585567a846384984bbbd81bf2cf314f8e21a08d89c05cd2331
+canonical execution result = PASS
+```
+
+Evidence note:
+
+```text
+one run visibly established literal relay + canonical execution
+a second run reconciled exact chunk/object identities
+the host Activity UI did not expose one complete end-to-end trace
+final classification = bounded composite PASS
+```
+
+This is intentionally narrower than a generic transport claim:
+
+```text
+small caller-context scalar -> execution-surface literal relay primitive = PASS
+generic cross-unit execution transport = OPEN
+cross-host/vendor portability = OPEN
+```
+
+See [2026-08-30 Host-Surface Relay Update](2026-08-30-host-surface-relay-update.md).
+
+---
+
 # 13. Orthogonal validation matrix
 
 Current research coverage:
@@ -525,6 +594,7 @@ E Execution handoff  = representative generic fixed-file operation PASS
 B Trusted binding    = non-authorizing binding/resolution PASS
 S Semantic override  = strong representative resistance
 P Portability        = P1-P4 PASS inside observed host/model family; cross-host/vendor pending
+H Host transfer       = H1-H4 bounded evidence; small-chunk relay primitive PASS; generic cross-unit relay open
 ```
 
 The protocol MUST NOT be considered universally production-ready solely because these controls pass.

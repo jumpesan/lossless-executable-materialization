@@ -34,6 +34,7 @@ Target flow:
 Executable Authority
 -> Trusted Binding / Materialization Descriptor
 -> Representation Acquisition
+-> Execution-Surface Transfer (where required)
 -> Representation Identity Gates
 -> Deterministic Assembly
 -> Mechanical Decode / Decompression
@@ -103,6 +104,20 @@ Execution Eligibility != Owner Invocation Eligibility
 
 Machine-checkable evidence from process execution and result classification. Process success and domain-semantic success remain separate.
 
+## 2.12 Execution-Surface Transfer
+
+A non-authorizing transfer step required when the surface that acquires or observes representation operands is not the same surface that performs deterministic materialization/execution.
+
+The current research distinguishes:
+
+```text
+Host Resource Visibility
+!= Caller-Context Operand Availability
+!= Execution-Surface Byte Availability
+```
+
+A successful transfer proves only that exact declared transport data reached the execution surface. It does not create executable authority.
+
 ---
 
 # 3. Core separations
@@ -113,6 +128,9 @@ Implementations MUST preserve at least:
 Authority
 != Descriptor
 != Representation
+!= Host Resource Visibility
+!= Caller-Context Availability
+!= Execution-Surface Availability
 != Materialized Copy
 != Cache / Workspace State
 != Execution Eligibility
@@ -125,6 +143,8 @@ Examples:
 
 ```text
 representation exists != representation is authorized
+resource visible to host != exact bytes available to execution surface
+caller-context availability != executable authority
 local file exists != local file is trusted
 local exact bytes != implicit cache/reuse authority
 schema/preflight PASS != executable authority
@@ -152,6 +172,8 @@ DESCRIPTOR_PREFLIGHT_PASS
 EXECUTION_UNIT_AUTHORITY_RESOLVED
   ↓
 OPERANDS_ACQUIRED
+  ↓
+EXECUTION_SURFACE_TRANSFERRED   # where acquisition and execution surfaces differ
   ↓
 REPRESENTATION_VERIFIED
   ↓
@@ -197,6 +219,7 @@ executable path(s)
 explicit execution-unit membership
 representation profile + immutable representation revision
 ordered operands + per-operand identity
+execution-surface transfer/relay profile where required
 expected compressed/intermediate identity
 expected canonical size/SHA-256/Git blob where applicable
 materialization target
@@ -281,6 +304,45 @@ repair corruption semantically
 ```
 
 Transport normalization MAY occur only when explicitly defined by the active representation profile.
+
+## 8.1 Split host surfaces and exact relay
+
+An implementation MUST NOT assume that a resource observable by a host retrieval surface is automatically available as exact bytes to its execution surface.
+
+When acquisition and execution are split across host surfaces, the transport contract SHOULD make the transfer state explicit:
+
+```text
+declared representation resource resolved
+-> exact operand value available on acquisition/caller surface
+-> exact operand transferred into execution surface
+-> representation identity gates
+```
+
+If the active contract forbids execution-surface network/repository access, a failed relay MUST NOT silently fall back to sandbox refetch.
+
+Observed host-integration controls currently include:
+
+```text
+external resource visible -> sandbox-local exact handoff = BLOCKED
+local attachment-plane exact canonical execution = PASS
+large monolithic caller-context relay = FAIL
+small chunked caller-context literal relay = PASS
+```
+
+For the positive bounded chunk relay:
+
+```text
+8 chunks x 1368 characters
+-> 10944 encoded characters
+-> 8207-byte transported capsule
+-> exact transported-object identity PASS
+-> canonical executable identity PASS
+-> canonical execution PASS
+```
+
+This result is sample-scoped. It does not establish generic application-wide transport, a universal maximum safe operand size, or cross-host portability.
+
+Chunk size/count are transport-profile parameters. They MUST NOT alter executable authority or domain semantics.
 
 ---
 
@@ -549,6 +611,11 @@ Representative execution handoff: PASS
 Generic fixed-file validator operation: PASS
 Trusted binding resolver: PASS
 Self-hosted immutable-revision resolver: PASS
+
+H1 external resource -> execution-surface handoff: BLOCKED / observed
+H2 local attachment-plane canonical execution: PASS
+H3 large monolithic caller-context relay: FAIL
+H4 small chunked caller-context literal relay: bounded composite PASS
 ```
 
 These controls materially strengthen the candidate, but do not establish universal production readiness.
@@ -565,6 +632,8 @@ Can independent third parties reproduce the machine path?
 How should dependency cycles and duplicate-member declarations be standardized?
 How should mixed execution-unit cache semantics work?
 What transport normalization/boundary cases should profiles permit?
+How should execution-surface relay profiles be generalized across different execution-unit shapes?
+What evidence should be required when host Activity/trace surfaces are incomplete?
 How should retries/version negotiation/upgrades be standardized?
 How should signed provenance bind to authority and descriptors?
 What is the minimum stable public schema/validator/materializer interface?
