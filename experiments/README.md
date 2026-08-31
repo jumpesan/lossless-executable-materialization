@@ -18,7 +18,7 @@ A result may pass one layer while failing another.
 
 The public record intentionally describes protocol-relevant evidence without depending on the application domain that originally exposed the problem.
 
-For dated evidence added after the `v0.1-preliminary` snapshot, see [`2026-08-19-validation-update.md`](2026-08-19-validation-update.md) and [`2026-08-30-host-surface-relay-update.md`](2026-08-30-host-surface-relay-update.md).
+For dated evidence added after the `v0.1-preliminary` snapshot, see [`2026-08-19-validation-update.md`](2026-08-19-validation-update.md), [`2026-08-30-host-surface-relay-update.md`](2026-08-30-host-surface-relay-update.md), and its [Japanese edition](2026-08-30-host-surface-relay-update.ja.md).
 
 ---
 

@@ -288,6 +288,7 @@ experiments/
   README.md
   2026-08-19-validation-update.md
   2026-08-30-host-surface-relay-update.md
+  2026-08-30-host-surface-relay-update.ja.md
 
 fixtures/
   README.md
@@ -299,6 +300,7 @@ research/
   prior-art.md
 
 AI_ASSISTANCE.md
+JAPANESE_TRANSLATION_GUIDE.md
 CONTRIBUTING.md
 SECURITY.md
 ROADMAP.md
@@ -316,7 +318,9 @@ Read more:
 - [Protocol Draft v0.1](spec/protocol-draft-v0.1.md)
 - [Experiment Matrix](experiments/README.md)
 - [2026-08-19 Validation Update](experiments/2026-08-19-validation-update.md)
-- [2026-08-30 Host-Surface Relay Update](experiments/2026-08-30-host-surface-relay-update.md)
+- [2026-08-30 Host-Surface Relay Update — English](experiments/2026-08-30-host-surface-relay-update.md)
+- [2026-08-30 ホスト内部の中継転送に関する検証更新 — 日本語](experiments/2026-08-30-host-surface-relay-update.ja.md)
+- [Japanese Translation Guide](JAPANESE_TRANSLATION_GUIDE.md)
 - [Public Reference Fixture](fixtures/README.md)
 - [AI Assistance Disclosure](AI_ASSISTANCE.md)
 - [Prior-Art Scan](research/prior-art.md)
@@ -569,7 +573,9 @@ AI生成物そのものは単独では実験的証拠として扱わず、検査
 - [プロトコル草案 v0.1](spec/protocol-draft-v0.1.md)
 - [実験一覧](experiments/README.md)
 - [2026-08-19 Validation Update](experiments/2026-08-19-validation-update.md)
-- [2026-08-30 Host-Surface Relay Update](experiments/2026-08-30-host-surface-relay-update.md)
+- [2026-08-30 Host-Surface Relay Update — 英語](experiments/2026-08-30-host-surface-relay-update.md)
+- [2026-08-30 ホスト内部の中継転送に関する検証更新 — 日本語](experiments/2026-08-30-host-surface-relay-update.ja.md)
+- [日本語翻訳ガイド](JAPANESE_TRANSLATION_GUIDE.md)
 - [公開用参照フィクスチャ](fixtures/README.md)
 - [先行技術調査](research/prior-art.md)
 - [研究ロードマップ](ROADMAP.md)

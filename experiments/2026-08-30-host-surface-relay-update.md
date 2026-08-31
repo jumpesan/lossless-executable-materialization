@@ -1,5 +1,7 @@
 # Host-Surface Relay Update — 2026-08-30
 
+[日本語版](2026-08-30-host-surface-relay-update.ja.md)
+
 ## Status
 
 ```text
